@@ -24,7 +24,8 @@
 
 :root{
   --coral:        #E4795A;   /* oklch(0.665 0.135 38)  primary action, the mark */
-  --coral-deep:   #D46B4D;   /* oklch(0.62 0.135 38)   link text and hover */
+  --coral-deep:   #AE4D2E;   /* oklch(0.54 0.135 38)   link text — AA on cream (4.86) */
+  --coral-hover:  #EC8E70;   /* lighter coral for button hover, keeps ink readable */
   --sage-deep:    #2E4A42;   /* oklch(0.345 0.045 168) secondary anchor, sparingly */
   --ink:          #20342E;   /* oklch(0.265 0.032 168) body and heading text */
   --peach:        #F7DCC9;   /* oklch(0.885 0.06 45)   eyebrow pills, soft fills */
@@ -147,13 +148,13 @@ a.card:hover{ border-color: var(--coral); }
 
 .btn{
   display:inline-block;
-  background: var(--coral); color:#fff;
+  background: var(--coral); color: var(--ink);
   font-family: var(--display); font-weight:700;
   font-size:1rem; letter-spacing:.06em; text-transform:uppercase;
   padding:.75rem 1.5rem; border-radius: var(--r-btn);
   text-decoration:none; margin-top:.5rem;
 }
-.btn:hover{ background: var(--coral-deep); color:#fff; }
+.btn:hover{ background: var(--coral-hover); color: var(--ink); }
 
 /* Outline buttons borrow the sage line, never coral. */
 .btn.outline{
@@ -266,7 +267,7 @@ textarea{ min-height:5.5rem; resize:vertical; }
 .scale input{ position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; }
 .scale input:checked + span{
   position:absolute; inset:-1px; display:flex; align-items:center; justify-content:center;
-  background: var(--coral); color:#fff; border-radius: var(--r-btn); font-weight:600;
+  background: var(--coral); color: var(--ink); border-radius: var(--r-btn); font-weight:600;
 }
 .scale-ends{
   display:flex; justify-content:space-between; margin-top:.45rem;
@@ -274,13 +275,13 @@ textarea{ min-height:5.5rem; resize:vertical; }
 }
 
 button.submit{
-  background: var(--coral); color:#fff;
+  background: var(--coral); color: var(--ink);
   font-family: var(--display); font-weight:700;
   font-size:1.05rem; letter-spacing:.06em; text-transform:uppercase;
   border:none; border-radius: var(--r-btn);
   padding:.85rem 1.9rem; cursor:pointer;
 }
-button.submit:hover{ background: var(--coral-deep); }
+button.submit:hover{ background: var(--coral-hover); }
 button.submit[disabled]{ background: var(--muted); cursor:default; }
 
 .formstatus{
