@@ -33,7 +33,7 @@
   --cream:        #FAF2EC;   /* oklch(0.972 0.014 45)  page background */
   --card:         #FFFFFF;   /* white is for cards only */
   --field:        #FDF9F5;   /* warm off-white — form fills, never pure white */
-  --muted:        #6B8078;   /* oklch(0.50 0.03 168) — explicit, never opacity on text */
+  --muted:        #536960;   /* oklch(0.50 0.03 168) — 5.33:1 on cream; never opacity on text */
 
   --display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   --text: Archivo, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
