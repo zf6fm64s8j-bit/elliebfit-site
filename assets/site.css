@@ -114,7 +114,7 @@ li{ margin: .3rem 0; }
 strong{ font-weight:600; }
 
 .back{
-  display:inline-block; margin-bottom:1.25rem;
+  display:block; width:fit-content; margin-bottom:1.25rem;
   font-size:11px; letter-spacing:.18em; text-transform:uppercase;
   font-weight:600; text-decoration:none;
 }
