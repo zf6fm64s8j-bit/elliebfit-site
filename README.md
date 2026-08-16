@@ -1,30 +1,116 @@
 # Above & Beyond Fitness — website
 
-Single self-contained page. `index.html` includes all styles, scripts, and photos inline (~1.3 MB); no build step.
+Static site for elliebfit.com, hosted on GitHub Pages. No build step: edit, commit, push.
 
-## Deploy to GitHub Pages
+- **Homepage** — `index.html`, a single bundled artifact (~1.6 MB) with all styles, scripts, fonts
+  and photos inlined. It makes **no external requests** at runtime.
+- **Every other page** — hand-written HTML sharing `assets/site.css` and the self-hosted brand
+  fonts in `assets/fonts/`.
 
-1. Create a new **public** repo, e.g. `elliebfit-site`.
-2. Upload `index.html` and `CNAME` to the repo root (drag-and-drop works: **Add file → Upload files**).
-3. **Settings → Pages** → Source: *Deploy from a branch* → Branch: `main`, folder `/ (root)` → Save.
-4. Wait ~1 minute, then check `https://<username>.github.io/elliebfit-site/` — the site should load.
+> [!IMPORTANT]
+> **Do not overwrite `index.html` by re-exporting the design.** That file has been hand-edited since
+> the original export — copy changes, the mobile layer, accessibility fixes, the consult-form
+> handler and the favicon all live inside it. Treat it as source, not as a build output. If you must
+> re-export, diff the two and port changes across deliberately.
+>
+> When editing the embedded JSON inside it, preserve the `</` escaping. Re-serialising with a
+> plain `json.dumps` lets a literal `</script>` in the template close the host `<script>` tag early
+> and blanks the page. The helper scripts in `docs/source/` handle this correctly.
 
-## Point elliebfit.com at it
+## Layout
 
-The domain is currently pointed at Google Sites, so DNS records must be changed at the domain registrar (likely Google Domains → now Squarespace Domains, or wherever the domain is managed).
+```
+index.html              bundled homepage
+assets/                 site.css, forms.js, fonts, apple-touch-icon
+forms/                  client forms hub
+  client-information/   health history questionnaire
+  par-q/                PAR-Q readiness questionnaire
+free-class-sign-up/     Friday class sign-up (embeds a Google Form)
+recipes/  pwr-moves/    content pages
+docs/                   client PDFs, Apps Script source, brand guide, PDF generators
+404.html                branded not-found page
+<old-slug>/             redirect stubs preserving inbound Google Sites URLs
+```
 
-1. **Settings → Pages → Custom domain**: enter `www.elliebfit.com`, Save. (The `CNAME` file already declares this.)
-2. At the registrar, edit DNS:
-   - Delete the existing Google Sites records (a `CNAME` for `www` pointing to `ghs.googlehosted.com`, and any `A` records for the apex used by Sites).
-   - Add `CNAME` — host `www` → value `<username>.github.io`
-   - For the bare domain `elliebfit.com`, add four `A` records to:
-     `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-     (and optionally the AAAA equivalents `2606:50c0:8000::153`, `…8001::153`, `…8002::153`, `…8003::153`)
-3. Back in **Settings → Pages**, wait for the DNS check to pass, then tick **Enforce HTTPS** (certificate issuance can take up to an hour).
-4. In Google Sites, **unpublish** the old site so it can't be served or indexed.
+## Forms
 
-DNS propagation is usually minutes but can take up to 24 hours.
+| Form | Delivery |
+|---|---|
+| Consult request (homepage) | Formspree → Ellen's inbox |
+| Client Information & Health History | Google Apps Script → Google Sheet, one tab per form |
+| PAR-Q | same Apps Script receiver |
+| Friday class sign-up | embedded Google Form (unchanged) |
 
-## Updating
+Setup and redeploy instructions for the receiver are in
+[`docs/apps-script/README.md`](docs/apps-script/README.md). All forms fall back to opening a
+pre-filled email if the request fails, so a submission is never silently lost.
 
-Re-export the design and replace `index.html` in the repo — Pages redeploys automatically.
+## Client PDFs
+
+`docs/liability-waiver.pdf` and `docs/late-cancel-policy.pdf` are generated, not hand-made.
+Regenerate with (requires Google Chrome installed):
+
+```bash
+python3 docs/source/build-client-pdfs.py
+```
+
+## Deploy
+
+Pages is already configured to serve `main` from the repo root. Push to `main` and it redeploys.
+
+```bash
+gh api repos/zf6fm64s8j-bit/elliebfit-site/pages/builds/latest --jq '.status + " " + .commit'
+```
+
+Preview locally with `python3 -m http.server 8000`.
+
+## Point elliebfit.com at it — not yet done
+
+`www.elliebfit.com` still serves the old Google Sites site. DNS is managed at **Namecheap**
+(nameservers `dns1/dns2.registrar-servers.com`).
+
+The custom domain is currently parked so the `github.io` preview URL stays browsable: the domain
+file is `CNAME.golive` rather than `CNAME`. To go live:
+
+1. Restore the domain file and set the custom domain:
+
+   ```bash
+   git mv CNAME.golive CNAME
+   gh api -X PUT repos/zf6fm64s8j-bit/elliebfit-site/pages \
+     -f 'cname=www.elliebfit.com' -f 'source[branch]=main' -f 'source[path]=/'
+   ```
+
+2. At Namecheap → Domain List → Manage → **Advanced DNS**, delete the Google Sites records (the
+   `www` CNAME to `ghs.googlehosted.com` and the four `@` A records to `216.239.3x.21`), then add:
+
+   | Type | Host | Value |
+   |---|---|---|
+   | CNAME | `www` | `zf6fm64s8j-bit.github.io.` |
+   | A | `@` | `185.199.108.153` |
+   | A | `@` | `185.199.109.153` |
+   | A | `@` | `185.199.110.153` |
+   | A | `@` | `185.199.111.153` |
+
+3. Confirm propagation, then tick **Enforce HTTPS** in Settings → Pages (certificate issuance can
+   take up to an hour).
+
+   ```bash
+   dig +short www.elliebfit.com; dig +short elliebfit.com A
+   ```
+
+4. Unpublish the old Google Site and remove its custom URL, so it cannot be served or indexed.
+
+5. Remove the `zf6fm64s8j-bit.github.io` entry from `ALLOWED_ORIGINS` in
+   `docs/apps-script/Code.gs` and redeploy the script (Deploy → Manage deployments → New version,
+   which keeps the same URL).
+
+## Branding
+
+The canonical design system is `docs/brand/` — *Desert coral & sage*, the Ascent mark (three
+chevrons at 100/62/30 opacity), Barlow Condensed for display and Archivo for text. Tokens are
+mirrored in `assets/site.css`; the homepage expresses the same palette in `oklch()`.
+
+## Session handoff
+
+[`HANDOFF.md`](HANDOFF.md) carries current state, outstanding tasks, and a *Do not repeat* list of
+approaches already ruled out. Read it before starting work.
