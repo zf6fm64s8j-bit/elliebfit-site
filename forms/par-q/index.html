@@ -30,18 +30,14 @@
     <div class="note">Seven quick questions. If you answer <strong>yes</strong> to any of them, talk with your doctor before you start becoming much more physically active.</div>
 
     <div id="formcard">
-      <form id="gform" method="POST" target="gsink"
-            action="https://docs.google.com/forms/d/e/1FAIpQLSfuDIcQ7P_A0oGII0zzF-m1K7EVd9LDvD-j9OUU8DcLwK3CyA/formResponse">
-        <input type="hidden" name="fvv" value="1">
-        <input type="hidden" name="pageHistory" value="0">
-        <fieldset><legend>Your name</legend><div class="field"><label class="q" for="f1">Name<span class="req" aria-hidden="true">*</span></label><input type="text" id="f1" name="entry.1576180877" required></div></fieldset><fieldset><legend>Seven questions</legend><p class="legend-note">Answer each one honestly. If you answer yes to any question, talk with your doctor before you start becoming much more physically active.</p><div class="field"><div class="q">1. Has your doctor ever said you have heart trouble?</div><div class="choices" role="radiogroup"><label for="f2o0"><input type="radio" id="f2o0" name="entry.451349204" value="Yes"><span>Yes</span></label><label for="f2o1"><input type="radio" id="f2o1" name="entry.451349204" value="No"><span>No</span></label></div></div><div class="field"><div class="q">2. Do you frequently have pains in your heart and chest?</div><div class="choices" role="radiogroup"><label for="f3o0"><input type="radio" id="f3o0" name="entry.2138977834" value="Yes"><span>Yes</span></label><label for="f3o1"><input type="radio" id="f3o1" name="entry.2138977834" value="No"><span>No</span></label></div></div><div class="field"><div class="q">3. Do you often feel faint or have spells of severe dizziness? 4. Has a doctor ever said your blood pressure is too high?</div><div class="choices" role="radiogroup"><label for="f4o0"><input type="radio" id="f4o0" name="entry.1576244118" value="Yes"><span>Yes</span></label><label for="f4o1"><input type="radio" id="f4o1" name="entry.1576244118" value="No"><span>No</span></label></div></div><div class="field"><div class="q">5. Has your doctor ever told you that you have a bone or joint problem, such as arthritis, that has been aggravated by exercise or might be made worse with exercise?</div><div class="choices" role="radiogroup"><label for="f5o0"><input type="radio" id="f5o0" name="entry.1085385076" value="Yes"><span>Yes</span></label><label for="f5o1"><input type="radio" id="f5o1" name="entry.1085385076" value="No"><span>No</span></label></div></div><div class="field"><div class="q">6. Is there a good physical reason not mentioned here why you should not follow an activity program even if you wanted to?</div><div class="choices" role="radiogroup"><label for="f6o0"><input type="radio" id="f6o0" name="entry.2134781450" value="Yes"><span>Yes</span></label><label for="f6o1"><input type="radio" id="f6o1" name="entry.2134781450" value="No"><span>No</span></label></div></div><div class="field"><div class="q">7. Are you over the age of 65 and not accustomed to vigorous exercise?</div><div class="choices" role="radiogroup"><label for="f7o0"><input type="radio" id="f7o0" name="entry.1211883434" value="Yes"><span>Yes</span></label><label for="f7o1"><input type="radio" id="f7o1" name="entry.1211883434" value="No"><span>No</span></label></div></div></fieldset>
+      <form id="abfform" data-form="PAR-Q Readiness Questionnaire" novalidate>
+        <input type="text" name="website" tabindex="-1" autocomplete="off"
+               aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0">
+        <fieldset><legend data-section="Your name">Your name</legend><div class="field"><label class="q" for="f1">Name<span class="req" aria-hidden="true">*</span></label><input type="text" id="f1" data-label="Name" required></div></fieldset><fieldset><legend data-section="Seven questions">Seven questions</legend><p class="legend-note">Answer each one honestly. If you answer yes to any question, talk with your doctor before you start becoming much more physically active.</p><div class="field"><div class="q">1. Has your doctor ever said you have heart trouble?<span class="req" aria-hidden="true">*</span></div><div class="choices" role="radiogroup" data-label="1. Has your doctor ever said you have heart trouble?" data-group="f2"><label for="f2o0"><input type="radio" id="f2o0" name="f2" value="Yes" required><span>Yes</span></label><label for="f2o1"><input type="radio" id="f2o1" name="f2" value="No" required><span>No</span></label></div></div><div class="field"><div class="q">2. Do you frequently have pains in your heart and chest?<span class="req" aria-hidden="true">*</span></div><div class="choices" role="radiogroup" data-label="2. Do you frequently have pains in your heart and chest?" data-group="f3"><label for="f3o0"><input type="radio" id="f3o0" name="f3" value="Yes" required><span>Yes</span></label><label for="f3o1"><input type="radio" id="f3o1" name="f3" value="No" required><span>No</span></label></div></div><div class="field"><div class="q">3. Do you often feel faint or have spells of severe dizziness?<span class="req" aria-hidden="true">*</span></div><div class="choices" role="radiogroup" data-label="3. Do you often feel faint or have spells of severe dizziness?" data-group="f4"><label for="f4o0"><input type="radio" id="f4o0" name="f4" value="Yes" required><span>Yes</span></label><label for="f4o1"><input type="radio" id="f4o1" name="f4" value="No" required><span>No</span></label></div></div><div class="field"><div class="q">4. Has a doctor ever said your blood pressure is too high?<span class="req" aria-hidden="true">*</span></div><div class="choices" role="radiogroup" data-label="4. Has a doctor ever said your blood pressure is too high?" data-group="f5"><label for="f5o0"><input type="radio" id="f5o0" name="f5" value="Yes" required><span>Yes</span></label><label for="f5o1"><input type="radio" id="f5o1" name="f5" value="No" required><span>No</span></label></div></div><div class="field"><div class="q">5. Has your doctor ever told you that you have a bone or joint problem, such as arthritis, that has been aggravated by exercise or might be made worse with exercise?<span class="req" aria-hidden="true">*</span></div><div class="choices" role="radiogroup" data-label="5. Has your doctor ever told you that you have a bone or joint problem, such as arthritis, that has been aggravated by exercise or might be made worse with exercise?" data-group="f6"><label for="f6o0"><input type="radio" id="f6o0" name="f6" value="Yes" required><span>Yes</span></label><label for="f6o1"><input type="radio" id="f6o1" name="f6" value="No" required><span>No</span></label></div></div><div class="field"><div class="q">6. Is there a good physical reason, not mentioned here, why you should not follow an activity program even if you wanted to?<span class="req" aria-hidden="true">*</span></div><div class="choices" role="radiogroup" data-label="6. Is there a good physical reason, not mentioned here, why you should not follow an activity program even if you wanted to?" data-group="f7"><label for="f7o0"><input type="radio" id="f7o0" name="f7" value="Yes" required><span>Yes</span></label><label for="f7o1"><input type="radio" id="f7o1" name="f7" value="No" required><span>No</span></label></div></div><div class="field"><div class="q">7. Are you over the age of 65 and not accustomed to vigorous exercise?<span class="req" aria-hidden="true">*</span></div><div class="choices" role="radiogroup" data-label="7. Are you over the age of 65 and not accustomed to vigorous exercise?" data-group="f8"><label for="f8o0"><input type="radio" id="f8o0" name="f8" value="Yes" required><span>Yes</span></label><label for="f8o1"><input type="radio" id="f8o1" name="f8" value="No" required><span>No</span></label></div></div></fieldset>
         <button class="submit" id="submitbtn" type="submit">Submit</button>
         <div class="formstatus" id="status" role="status" aria-live="polite"></div>
       </form>
     </div>
-
-    <iframe id="gsink" name="gsink" title="Form submission target"
-            style="display:none" aria-hidden="true"></iframe>
   </div>
 </main>
 
@@ -54,61 +50,8 @@
   </div>
 </footer>
 
-<script>
-  window.__DONE__ = '<div class="done"><h2>Thank you — your PAR-Q is recorded.</h2><p>Ellen will review your answers before your first session and follow up personally if anything needs a conversation.</p><p>Still to do: the <a href="../../forms/client-information/">client information &amp; health history form</a>, if you have not filled it in yet.</p><a class="btn" href="../../">Back to the site</a></div>';
-
-  (function () {
-    'use strict';
-    var form   = document.getElementById('gform');
-    var card   = document.getElementById('formcard');
-    var status = document.getElementById('status');
-    var btn    = document.getElementById('submitbtn');
-    var sink   = document.getElementById('gsink');
-    var sent = false, finished = false;
-
-    function setStatus(msg, kind) {
-      status.className = 'formstatus show ' + (kind || '');
-      status.textContent = msg;
-    }
-
-    function finish() {
-      if (finished) return;
-      finished = true;
-      card.innerHTML = window.__DONE__;
-      card.scrollIntoView({ block: 'start', behavior: 'smooth' });
-    }
-
-    // The cross-origin POST is opaque, so completion is inferred from the
-    // hidden iframe navigating. Ignore its initial about:blank load.
-    sink.addEventListener('load', function () { if (sent) finish(); });
-
-    form.addEventListener('submit', function (e) {
-      // Date questions are three selects; require all or none.
-      var dateBoxes = form.querySelectorAll('[data-date="1"]');
-      for (var i = 0; i < dateBoxes.length; i++) {
-        var sels = dateBoxes[i].querySelectorAll('select');
-        var filled = 0;
-        for (var j = 0; j < sels.length; j++) if (sels[j].value) filled++;
-        if (filled > 0 && filled < sels.length) {
-          e.preventDefault();
-          dateBoxes[i].classList.add('invalid');
-          setStatus('Please choose a full date — month, day and year.', 'err');
-          dateBoxes[i].scrollIntoView({ block: 'center', behavior: 'smooth' });
-          return;
-        }
-        dateBoxes[i].classList.remove('invalid');
-      }
-
-      sent = true;
-      btn.disabled = true;
-      setStatus('Sending your answers…', 'pending');
-      // If the iframe load event never arrives (blocked third-party frame),
-      // still confirm rather than leaving the visitor staring at a spinner.
-      setTimeout(finish, 6000);
-    });
-  })();
-
-</script>
+<script>window.__DONE__ = '<div class="done"><h2>Thank you — your PAR-Q is recorded.</h2><p>Ellen will review your answers before your first session and follow up personally if anything needs a conversation.</p><p>Still to do: the <a href="../client-information/">client information &amp; health history form</a>, if you have not filled it in yet.</p><a class="btn" href="../../">Back to the site</a></div>';</script>
+<script src="../../assets/forms.js"></script>
 
 </body>
 </html>
