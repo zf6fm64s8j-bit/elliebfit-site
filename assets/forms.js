@@ -2,7 +2,8 @@
  * Client form submission.
  *
  * Posts to the Apps Script web app in docs/apps-script/, which appends the
- * submission to a Google Doc. The previous Google Forms path was abandoned:
+ * submission as a row in a Google Sheet, one tab per form. The previous Google
+ * Forms path was abandoned:
  * /formResponse now rejects third-party posts with HTTP 400 and submissions
  * were being silently dropped.
  *
@@ -13,7 +14,7 @@
   'use strict';
 
   // Paste the Apps Script /exec URL here. Blank = email fallback only.
-  var ENDPOINT = '';
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbw6CSTYxFHWJiHgcM2kUgus5po5c2mYf85jv4KakbU4fWDBDDltyvYbsfN6A6yqgU4U/exec';
 
   var CONTACT = 'ellen@elliebfit.com';
 
