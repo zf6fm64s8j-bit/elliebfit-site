@@ -1,42 +1,49 @@
 # Client form receiver — setup
 
 The client forms on the site post to a Google Apps Script web app, which appends
-each submission to a Google Doc and emails a copy. This replaces the old Google
-Forms path, which stopped accepting posts from outside Google (every request
-returned HTTP 400 and nothing reached the response sheet).
+each submission as a row in a Google Sheet and emails a copy. This replaces the
+old Google Forms path, which stopped accepting posts from outside Google (every
+request returned HTTP 400 and nothing reached the response sheet).
 
-Setup takes about five minutes and has to be done from Ellen's Google account,
-since it creates a doc and a script that run as her.
+Each form gets its own tab, named after the form. Columns are created from the
+question labels the first time they are seen, so the two questionnaires can have
+completely different fields with no setup — and adding a question later just adds
+a column.
 
-## 1. Create the document
+Setup has to be done from Ellen's Google account, since the script runs as her.
 
-1. Go to <https://docs.new> and create a doc. Name it something like
-   **Above & Beyond — Client Form Submissions**.
-2. Copy its id out of the URL — the long part between `/d/` and `/edit`:
+## 1. The spreadsheet
 
-   ```
-   https://docs.google.com/document/d/1AbC...XyZ/edit
-                                       ^^^^^^^^^^^ this
-   ```
+Already created:
+<https://docs.google.com/spreadsheets/d/15qnDUUHotALcNEq8QhwkVUd2MytJX5NnDbGE269ilK8/edit>
 
-## 2. Create the script
+Its id is already filled into `SHEET_ID` in [`Code.gs`](Code.gs). If you ever
+switch to a different spreadsheet, copy the long part of its URL between `/d/`
+and `/edit` and replace that value.
 
-1. In that doc: **Extensions → Apps Script**.
-2. Delete the placeholder `myFunction` code.
+## 2. The script
+
+1. Open the spreadsheet → **Extensions → Apps Script**.
+2. Delete whatever is in the editor.
 3. Paste in the entire contents of [`Code.gs`](Code.gs).
-4. At the top, set `DOC_ID` to the id you copied. Leave `NOTIFY_EMAIL` as is to
-   get an email per submission, or set it to `''` to turn that off.
-5. Save.
+4. Save.
+
+> **If you pasted an earlier version of this file:** replace it completely. The
+> first version wrote to a Google *Doc* via `DocumentApp`, which throws
+> *"Document is missing (perhaps it was deleted, or you don't have read
+> access?)"* when the id belongs to a spreadsheet. This version uses
+> `SpreadsheetApp` instead.
 
 ## 3. Check it can write
 
-1. In the editor's function dropdown pick **`testWrite`**, then **Run**.
-2. Google will ask for authorization the first time — approve it. It will warn
-   that the app is unverified; that is expected for your own script. Choose
+1. In the function dropdown pick **`testWrite`**, then **Run**.
+2. Approve the authorization prompt the first time. Google will warn that the
+   app is unverified — expected for your own script. Choose
    **Advanced → Go to (project name)**.
-3. Open the doc. There should be a "Test submission" entry. Delete it.
+3. Check the spreadsheet: there should be a new **Test submission** tab with a
+   header row and one row. Delete that tab when you're satisfied.
 
-If this step fails, the deployment will fail too — fix it here first.
+If this fails, fix it here — the deployment will not work either.
 
 ## 4. Deploy
 
@@ -47,30 +54,29 @@ If this step fails, the deployment will fail too — fix it here first.
    - **Who has access:** Anyone
 4. **Deploy**, then copy the **Web app URL**. It ends in `/exec`.
 
-"Anyone" means anyone who knows the URL can post to it. The script only writes
-into the doc, only accepts posts carrying an approved origin, and drops anything
-that trips the honeypot field.
+"Anyone" means anyone with the URL can post to it. The script only appends to
+this spreadsheet, only accepts posts carrying an approved origin, and drops
+anything that trips the hidden honeypot field.
 
 ## 5. Put the URL into the site
 
-Paste the `/exec` URL into `assets/forms.js`:
+Paste the `/exec` URL into [`assets/forms.js`](../../assets/forms.js):
 
 ```js
 var ENDPOINT = 'https://script.google.com/macros/s/AKfy.../exec';
 ```
 
-Commit and deploy. Submit a test through
-`/forms/par-q/` and confirm it lands in the doc.
+Commit and deploy, then submit a test through `/forms/par-q/` and confirm the
+row lands.
 
 ## Re-deploying after script edits
 
-Changing `Code.gs` does not update the live web app on its own. Use
-**Deploy → Manage deployments → edit (pencil) → Version: New version → Deploy**.
-That keeps the same `/exec` URL. Creating a *new deployment* instead gives a new
-URL and would need the site updated again.
+Editing `Code.gs` does not update the live web app. Use **Deploy → Manage
+deployments → edit (pencil) → Version: New version → Deploy**. That keeps the
+same `/exec` URL. Creating a *new deployment* instead issues a new URL and would
+need the site updated again.
 
 ## If a submission ever fails
 
 The page falls back to opening the visitor's email client with the answers
-pre-filled, so a submission is never silently lost. The visitor is told what
-happened and given the address.
+pre-filled, and tells them what happened. A submission is never silently lost.
