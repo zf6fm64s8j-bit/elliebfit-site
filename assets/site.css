@@ -316,3 +316,17 @@ button.submit[disabled] { opacity: .6; cursor: default; }
   padding: 1.6rem 1.5rem;
 }
 .done h2 { margin-top: 0; }
+
+/* ---------- mobile ---------- */
+@media (max-width: 600px) {
+  .wrap { padding: 0 1rem; }
+  main { padding: 1.75rem 0 3rem; }
+  h1 { font-size: clamp(1.55rem, 7vw, 2rem); }
+  .field { padding: .9rem 1rem; }
+  .scale label { width: 1.85rem; height: 1.85rem; font-size: .8rem; }
+  .dob { flex-wrap: wrap; }
+  .dob select { flex: 1 1 30%; min-width: 0; }
+  header.site .loc { display: none; }
+  button.submit { width: 100%; }
+  .embed { min-height: 78vh; }
+}
