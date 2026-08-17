@@ -12,7 +12,7 @@ worktree:
   untracked: 0
 status: active
 verification: pass
-next_action: "Unpublish the old Google Site and remove its custom URL, then drop the github.io origin from ALLOWED_ORIGINS in docs/apps-script/Code.gs and redeploy the script."
+next_action: "Go-live is complete. Next up are the owner decisions on the waiver (minors, transportation, fee clause) in docs/waiver-revisions.md, and the actionable items from the site audit: analytics, local-search landing pages, and rates examples."
 ---
 
 # Handoff — Above & Beyond Fitness website (elliebfit.com)
@@ -22,7 +22,8 @@ site. Deployed to GitHub Pages at
 <https://www.elliebfit.com> **over HTTPS**. The cutover is complete: Namecheap points at GitHub
 Pages, the Let's Encrypt certificate covers `www.elliebfit.com` and the apex (issued 2026-08-17,
 renews by 2026-11-15), HTTPS is enforced, and http/apex/`github.io` all 301 to the canonical origin.
-The one remaining step is unpublishing the old Google Site.
+The old Google Site is unpublished and the Apps Script origin allow-list is down to the two
+elliebfit.com origins. **The go-live sequence is complete.**
 
 ## State of play
 
@@ -103,6 +104,7 @@ deploying, because the change had to be proven before it went out.
 | Routes over HTTPS | 18 paths + a 404 | pass — 18×200, unknown path 404s |
 | Forms after cutover | `fetch` from the live page | pass — `https://www.elliebfit.com` accepted, honeypot returned `skipped: spam` (no row written), forged origin rejected. Note the allow-list is https-only, so enforcement was load-bearing |
 | Rendered head on live HTTPS | DOM probe | pass — title, `lang=en`, 22 meta, canonical, og:image, 1 JSON-LD block |
+| Origin allow-list after redeploy | `fetch` from the live page, 4 origins | pass — both elliebfit.com origins accepted, `github.io` and a control both `origin not allowed` |
 | Rendered head metadata | DOM probe on the live page | pass — was 0 title / 2 meta / 0 JSON-LD; now title, `lang=en`, 22 meta, 1 canonical, 3 JSON-LD entities, no duplicates |
 | Anchor offset | `scrollIntoView` at 1280 / 375 px | pass — targets land at 88 px / 172 px, clearing the 73 px / 158 px header; no horizontal overflow |
 | Target size | measured nav links | pass — 12-13 px → 44 px desktop, 30 px mobile (WCAG 2.2 SC 2.5.8 AA floor is 24 px) |
@@ -122,8 +124,6 @@ deploying, because the change had to be proven before it went out.
 - **The Apps Script endpoint URL is public** (it is in `assets/forms.js` in a public repo). Mitigated
   by an origin allow-list and honeypot; it can only append rows to one spreadsheet. Redeploy for a
   fresh URL if abused.
-- **`ALLOWED_ORIGINS` in `docs/apps-script/Code.gs` still contains the `zf6fm64s8j-bit.github.io`
-  preview origin.** Remove it after cutover.
 - **The published waiver has not been approved by an attorney.** v1.0 applies a drafting review that
   states on its face that it is not legal advice and not a substitute for an Arizona-licensed
   attorney. It was published at the owner's direction. `docs/waiver-revisions.md` records this and
@@ -198,8 +198,10 @@ deploying, because the change had to be proven before it went out.
 | T-20260816-63 | P1 | done | Apply the review to the waiver, remove the draft banner, replace the live PDF | Waiver v1.0 linked from `/forms/` | 2026-08-16 |
 | T-20260816-w1 | P1 | open | Owner decisions on the waiver: accept minors under this form or use a separate minor-participation form; confirm transportation is never provided; keep or drop the fee clause | Each decided, and `build-waiver.py` bumped to v1.1 if the text changes | 2026-08-16 |
 | T-20260816-w2 | P2 | open | Version and date the PAR-Q and health questionnaire PDFs the way the waiver now is — § 4 incorporates them by reference | Both carry a version + effective date, retained with the signed waiver | 2026-08-16 |
-| T-20260816-yy | P1 | open | DNS cutover: restore `CNAME`, set custom domain, Namecheap records, Enforce HTTPS, unpublish Google Sites | `https://www.elliebfit.com` serves this site over HTTPS | 2026-08-16 |
-| T-20260816-o5 | P2 | open | Remove the `github.io` preview origin from `ALLOWED_ORIGINS` and redeploy the Apps Script | Only elliebfit.com origins accepted | 2026-08-16 |
+| T-20260816-yy | P1 | done | DNS cutover: restore `CNAME`, set custom domain, Namecheap records, Enforce HTTPS, unpublish Google Sites | `https://www.elliebfit.com` serves this site over HTTPS | 2026-08-16 |
+| T-20260816-a1 | P2 | open | Restore the apex SPF TXT record and re-add DKIM + domain verification from Google Admin | `dig TXT elliebfit.com` returns SPF; DKIM authenticates | 2026-08-16 |
+| T-20260816-a2 | P2 | open | Decide on the audit's larger items: analytics, local-search landing pages, rates examples, privacy notice | Each decided | 2026-08-16 |
+| T-20260816-o5 | P2 | done | Remove the `github.io` preview origin from `ALLOWED_ORIGINS` and redeploy the Apps Script | Only elliebfit.com origins accepted | 2026-08-16 |
 | T-20260816-0z | P2 | open | Label PAR-Q radio groups with `aria-labelledby` so the question is announced with the options | Screen reader reads the question before Yes/No | 2026-08-16 |
 | T-20260816-j9 | P3 | open | Add a skip-to-content link and a `prefers-reduced-motion` guard on the smooth scrolls | Both present on every page | 2026-08-16 |
 | T-20260816-v5 | P3 | open | Decide whether to restore the 5 testimonials trimmed from the old site, and the dropped bio detail | User has decided either way | 2026-08-16 |

@@ -23,8 +23,7 @@ var NOTIFY_EMAIL = 'ellen@elliebfit.com';
  *  free-for-all writer into the sheet. */
 var ALLOWED_ORIGINS = [
   'https://www.elliebfit.com',
-  'https://elliebfit.com',
-  'https://zf6fm64s8j-bit.github.io'
+  'https://elliebfit.com'
 ];
 
 // ------------------------------------------------------------------ routes
