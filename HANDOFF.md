@@ -5,7 +5,7 @@ host: claude-code
 scope: .
 vcs: git
 branch: main
-head: 663838ebd7aab73733a326cc9c0cedcbfb6ad70f
+head: 0d2dae5d3162b969397717bf3052b2984eb7b5e1
 worktree:
   staged: 0
   unstaged: 0
