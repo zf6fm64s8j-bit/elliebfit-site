@@ -5,7 +5,7 @@ host: claude-code
 scope: .
 vcs: git
 branch: main
-head: a8b4f8a90a2ab10a738bec0bc278b477892ce4f2
+head: 08d0510800b3e2b9adf8038239c4394cf8cbd777
 worktree:
   staged: 0
   unstaged: 0
@@ -115,6 +115,17 @@ deploying, because the change had to be proven before it went out.
 | Forms after cutover | `fetch` from the live page | pass — `https://www.elliebfit.com` accepted, honeypot returned `skipped: spam` (no row written), forged origin rejected. Note the allow-list is https-only, so enforcement was load-bearing |
 | Rendered head on live HTTPS | DOM probe | pass — title, `lang=en`, 22 meta, canonical, og:image, 1 JSON-LD block |
 | Origin allow-list after redeploy | `fetch` from the live page, 4 origins | pass — both elliebfit.com origins accepted, `github.io` and a control both `origin not allowed` |
+| DKIM record | `dig` on 2 authoritative + 4 public resolvers, `openssl` | pass — 411 chars everywhere, byte-identical to the key Google issued, valid 2048-bit RSA, `v=DKIM1; k=rsa`, no `t=y` test flag |
+| SPF record | `dig` + include-chain expansion | pass — exactly one `v=spf1` record (two would be a permerror), chain resolves, 1 of 10 DNS lookups used |
+| DMARC | `dig` | present — `p=none`, monitor-only, reports to ellen@ |
+| Icons, HTTP | 5 previously-404ing paths | pass — favicon.ico 200 `image/vnd.microsoft.icon`, manifest 200 `application/manifest+json`, 192/512/apple-touch 200 `image/png` |
+| Icons, consistency | icon `<link>`s on all 15 live pages | pass — favicon.ico, SVG and manifest byte-identical on every page; the 3 apple-touch path spellings are depth-relative and resolve to one file (same md5) |
+| Icons, post-hydration | DOM probe on the live homepage | pass — all 4 links survive the document swap and fetch 200 |
+| Icons, rendering | rasterised 16/32/48 + simulated Android circular crop | pass — single chevron legible at 16px; the maskable mark clears the crop |
+| Routes, full sweep | 24 paths + a 404 | pass — 24×200, unknown path 404s |
+| Canonical origin | 4 origins | pass — http/apex/`github.io` all 301 to `https://www.elliebfit.com/` |
+| Analytics inert by default | live DOM + resource probe | pass — `gtag` undefined, no cookies, 0 googletagmanager requests; only third-party host is `script.google.com` (the forms endpoint) |
+| Interaction fixes, live | live DOM probe | pass — header 73px, all 6 nav targets 44px, `#rates` scroll-margin 88px, `:focus-visible` rule present, `autocomplete` + `aria-required` set |
 | Rendered head metadata | DOM probe on the live page | pass — was 0 title / 2 meta / 0 JSON-LD; now title, `lang=en`, 22 meta, 1 canonical, 3 JSON-LD entities, no duplicates |
 | Anchor offset | `scrollIntoView` at 1280 / 375 px | pass — targets land at 88 px / 172 px, clearing the 73 px / 158 px header; no horizontal overflow |
 | Target size | measured nav links | pass — 12-13 px → 44 px desktop, 30 px mobile (WCAG 2.2 SC 2.5.8 AA floor is 24 px) |
@@ -186,6 +197,13 @@ deploying, because the change had to be proven before it went out.
 - **A bare `required` attribute on the bundle's inputs** — rejected: it does not survive the
   template's React compile, and no `<form>` wraps the fields to enforce it. Use `aria-required`;
   the inline handler already does the validation.
+- **`Image.blend` for stacked translucent shapes** — rejected: it mixes the *whole* canvas, not the
+  shape being drawn, so each chevron of the Ascent mark washed out the ones painted before it and
+  the icons came out visibly pale. Composite per shape with `Image.alpha_composite` instead.
+- **Trusting the Pages build API's `status` field during a GitHub incident** — it sat on `building`
+  with `created_at == updated_at` while the underlying Actions run had already failed on a 503.
+  Check `gh run list` and `gh run view --log-failed`; the Actions rerun endpoint can 503 too, but
+  `git push` still works and enqueues a fresh run.
 - **Assuming a script referenced from `<helmet>` runs once** — rejected: the homepage evaluated
   `assets/analytics.js` **twice** from a single fetch and a single surviving `<script>` tag, because
   the runtime both re-creates scripts to make them execute and hoists the helmet into `<head>`. It
