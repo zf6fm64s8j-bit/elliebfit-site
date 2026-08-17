@@ -238,6 +238,18 @@ input:focus, textarea:focus, select:focus{
   outline:none; border-color: var(--coral);
   box-shadow: 0 0 0 3px rgba(228,121,90,.16);
 }
+/* Fields get the coral ring above; everything else focusable had no visible
+   focus at all. Ink reads on every surface in the palette: 11.9:1 on cream,
+   12.6:1 on white, 4.5:1 on a coral fill. Keyboard-only, so pointer users
+   never see it. */
+a:focus-visible, button:focus-visible, summary:focus-visible,
+[tabindex]:focus-visible{
+  outline:3px solid var(--ink); outline-offset:2px; border-radius:2px;
+}
+/* Keep the coral ring on fields but restore an outline for keyboard users. */
+input:focus-visible, textarea:focus-visible, select:focus-visible{
+  outline:3px solid var(--ink); outline-offset:2px;
+}
 textarea{ min-height:5.5rem; resize:vertical; }
 
 .dob{ display:flex; gap:.5rem; }
