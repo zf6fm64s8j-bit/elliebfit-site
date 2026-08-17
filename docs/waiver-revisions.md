@@ -12,7 +12,81 @@ copies on file reference it by version number.
 
 | Version | Effective | Summary |
 |---|---|---|
+| 1.1 | August 17, 2026 | Expanded the minors section now that the business is keeping the advertised ages 8-92 range. |
 | 1.0 | August 16, 2026 | First published version. Supersedes the unpublished drafts v1 and v2. |
+
+Superseded PDFs are kept in `docs/archive/`.
+
+---
+
+## v1.1 - August 17, 2026
+
+The owner decided to keep advertising training for ages 8-92, so Section 12 had
+to do more than v1.0's bare consent. It was rewritten into six labelled
+subsections, and Section 1 now states the age range so the document's scope
+matches the marketing copy.
+
+### What changed from v1.0
+
+**Section 1.** States that Above & Beyond accepts clients aged 8 and older, and
+that Section 12 also applies and must be signed for anyone under 18.
+
+**Section 12(a) consent and authority.** Unchanged in substance from v1.0.
+
+**Section 12(b) the parent has read the agreement.** New. The parent confirms
+they read Sections 1-11, had a chance to ask questions, and understand and
+accept the Section 3 risks - including serious injury and death - in deciding to
+enroll the minor. This is about proving informed consent, which is the part a
+court will actually look at.
+
+**Section 12(c) the parent's own claims are released.** New, and the most
+valuable addition. A parent has their *own* claims arising from a child's
+injury - most importantly for the child's medical expenses, and for loss of the
+child's services or companionship. Those belong to the parent, so the parent can
+release them, and this release is on the same ordinary-negligence-only footing
+with the same Section 2 exclusions. v1.0 gestured at this in one clause; it is
+now explicit about which claims it covers.
+
+**Section 12(d) health, supervision, and safety.** New. Accurate health and
+emergency-contact information, prompt updates, compliance with Sections 4, 6 and
+7, and a requirement that the parent stay at the session or be immediately
+reachable by phone throughout. Above & Beyond may require attendance or medical
+clearance where safety warrants.
+
+**Section 12(e) emergency care.** New. Authorizes Above & Beyond to summon
+emergency medical services and pass responders the health information on file
+when the parent cannot be reached, with the parent responsible for the cost.
+Without this, a trainer faces an avoidable hesitation in the one moment that
+matters.
+
+**Section 12(f) what this section does not do.** Retained from v1.0, deliberately.
+Nothing purports to waive the minor's own claims, and the parent is not asked to
+indemnify Above & Beyond for its own negligence.
+
+**Spelling.** "enrol"/"authorises" corrected to US spelling; "Acknowledgement"
+to "Acknowledgment".
+
+### What this does and does not achieve
+
+Worth being blunt, because the section reads more protective than it is.
+
+**What it does:** documents informed parental consent; releases the parent's own
+derivative claims, which are real and often the larger medical-expense exposure;
+creates enforceable operational duties around health disclosure and supervision;
+and authorizes emergency care.
+
+**What it cannot do:** it does not eliminate the minor's own claim. Arizona has
+no clear rule permitting a parent to waive a child's future ordinary-negligence
+claim in a commercial agreement, and A.R.S. Section 12-553's equine carve-out
+implies the absence of a general one. A minor's limitations period is generally
+tolled until 18, so a claim can surface years later. **Insurance, not drafting,
+is the mitigation for that exposure** - confirm the policy covers training
+minors, and confirm the age floor it will write to.
+
+Section 12(f) is not a weakness. Overreaching - a purported waiver of the minor's
+claim, or a parent indemnity for Above & Beyond's own negligence - risks being
+read as an indirect release and can undermine the parts that would otherwise
+hold.
 
 ---
 
@@ -100,10 +174,9 @@ place.
 
 These are choices about how the business runs, not drafting problems:
 
-1. **Minors.** § 12 now protects far less than draft v2 appeared to. Decide
-   whether to accept clients under 18 at all under this form, or to use a
-   separate minor-participation form covering consent, health, and emergency
-   procedures.
+1. **Minors.** Decided: clients from age 8 are accepted, and v1.1 expands
+   Section 12 accordingly. Still worth confirming that the insurance policy
+   covers training minors and what age floor it will write to.
 2. **Transportation.** § 1 states that Above & Beyond does not drive clients.
    If that is ever not true, the sentence must come out and the activity needs
    its own insurance review.

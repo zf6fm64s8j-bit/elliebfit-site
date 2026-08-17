@@ -21,8 +21,8 @@ import os
 import subprocess
 import tempfile
 
-VERSION = '1.0'
-EFFECTIVE = 'August 16, 2026'
+VERSION = '1.1'
+EFFECTIVE = 'August 17, 2026'
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 FONTS = os.path.join(ROOT, 'assets', 'fonts')
@@ -147,7 +147,9 @@ residence; (b) outdoors, including sidewalks, parks, and desert trails; (c) at a
 community facility, or other venue; and (d) remotely by live video (&ldquo;virtual training&rdquo;).
 <strong>This Agreement applies to all of these settings</strong> and to any equipment used in them,
 whether supplied by {AB} or by Client. <strong>Transportation of Client is not part of the
-Services</strong>, and {AB} does not drive Client to or from any session.</p>{ini()}</section>
+Services</strong>, and {AB} does not drive Client to or from any session.</p>
+<p>{AB} accepts Clients <strong>aged 8 and older</strong>. Where the Client is under 18,
+<strong>Section 12 also applies</strong> and a parent or legal guardian must sign it.</p>{ini()}</section>
 
 <section><h2>2. Release of liability</h2>
 <p>To the fullest extent permitted by Arizona law, Client <strong>releases and covenants not to
@@ -240,7 +242,7 @@ original.</p>
 separate payment, scheduling, cancellation, refund, or privacy terms between the parties, which
 remain in effect on their own terms.</p>{ini()}</section>
 
-<section><h2>11. Acknowledgement of understanding</h2>
+<section><h2>11. Acknowledgment of understanding</h2>
 <p>Client acknowledges that Client: has read this Agreement and understands its terms;
 <strong>received a copy before participating</strong>; had a reasonable opportunity to ask questions;
 understands it applies only to the Services and the parties identified in it; and understands
@@ -261,14 +263,46 @@ exclusions stated in Section 2.</p></section>
 </div>
 
 <section><h2>12. If the client is under 18</h2>
-<p>Parent/Guardian consents to Minor&rsquo;s participation in the Services and represents that
-Parent/Guardian has legal authority to provide that consent. Parent/Guardian agrees to provide
-accurate health, emergency, and safety information and to comply with the applicable safety
-requirements in this Agreement.</p>
-<p><strong>Parent/Guardian releases only Parent/Guardian&rsquo;s own claims, if any. Nothing in this
-Section purports to release, waive, or limit any substantive claim belonging to Minor, and
-Parent/Guardian is not required to indemnify {AB} for {AB}&rsquo;s own negligence.</strong> A new
-agreement in the Client&rsquo;s own name is required when Minor turns 18.</p>
+<p><strong>a. Consent and authority.</strong> The parent or legal guardian signing below
+(&ldquo;Parent/Guardian&rdquo;) consents to the participation of the client named below
+(&ldquo;Minor&rdquo;) in the Services, and represents that Parent/Guardian has legal authority to
+give that consent and to sign this Agreement for the Minor.</p>
+
+<p><strong>b. Parent/Guardian has read this Agreement.</strong> Parent/Guardian has read Sections 1
+through 11, has had a reasonable opportunity to ask questions, and
+<strong>understands the known and inherent risks described in Section 3 &mdash; including the risk of
+serious injury and death &mdash; and accepts those risks in deciding to enroll the Minor.</strong></p>
+
+<p><strong>c. Parent/Guardian&rsquo;s own claims are released.</strong> To the fullest extent
+permitted by Arizona law, Parent/Guardian <strong>releases and covenants not to sue</strong> the
+Released Parties for <strong>Parent/Guardian&rsquo;s own claims</strong> arising out of or related to
+the Minor&rsquo;s participation in the Services &mdash; including Parent/Guardian&rsquo;s own claims
+for the Minor&rsquo;s medical or related expenses, and for loss of the Minor&rsquo;s services or
+companionship &mdash; but only to the extent caused by a Released Party&rsquo;s ordinary negligence.
+The exclusions in Section 2 apply to this release in the same way.</p>
+
+<p><strong>d. Health, supervision, and safety.</strong> Parent/Guardian will give complete and
+accurate health, medication, injury, and emergency-contact information for the Minor, will update it
+promptly, and will comply with the safety requirements in Sections 4, 6, and 7.
+<strong>Parent/Guardian will remain present at the session location or immediately reachable by
+phone for the whole of every session</strong>, and {AB} may require Parent/Guardian to be present,
+or require medical clearance, for any Client or session where that is reasonably necessary for
+safety.</p>
+
+<p><strong>e. Emergency care.</strong> If {AB} reasonably believes the Minor needs urgent medical
+attention and Parent/Guardian cannot be reached, <strong>Parent/Guardian authorizes {AB} to summon
+emergency medical services</strong> and to give responders the health information Parent/Guardian has
+provided. Parent/Guardian is responsible for the cost of any emergency care.</p>
+
+<p><strong>f. What this Section does not do.</strong> <strong>Nothing in this Section purports to
+release, waive, arbitrate, or limit any substantive claim belonging to the Minor</strong>, and
+Parent/Guardian is not required to indemnify {AB} for {AB}&rsquo;s own negligence. A new agreement
+signed by the Client in the Client&rsquo;s own name is required when the Minor turns 18.</p>
+
+  <div class="sigrow">
+    <div class="sig"><div class="sigline"></div><div class="siglabel">Minor&rsquo;s date of birth</div></div>
+    <div class="sig"><div class="sigline"></div><div class="siglabel">Emergency contact &middot; name and phone</div></div>
+  </div>
   <div class="sigrow">
     <div class="sig"><div class="sigline"></div><div class="siglabel">Minor&rsquo;s name (please print)</div></div>
     <div class="sig"><div class="sigline"></div><div class="siglabel">Parent/guardian signature</div></div>
