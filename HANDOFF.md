@@ -5,22 +5,24 @@ host: claude-code
 scope: .
 vcs: git
 branch: main
-head: e2f724838d5b28cf05f5af48506e43a43820529c
+head: 8c58e383518ec1917b811bae7ac46d47f59a57a6
 worktree:
   staged: 0
   unstaged: 0
   untracked: 0
 status: active
 verification: pass
-next_action: "Confirm the waiver's open owner decisions (minors, transportation, fee clause) in docs/waiver-revisions.md; when the user is ready to go live, restore CNAME.golive to CNAME and run the DNS cutover."
+next_action: "Wait for the GitHub Pages TLS certificate on www.elliebfit.com, then set https_enforced=true; after that, unpublish the old Google Site and drop the github.io origin from ALLOWED_ORIGINS."
 ---
 
 # Handoff — Above & Beyond Fitness website (elliebfit.com)
 
 Static marketing site for a Scottsdale personal-training business, replacing an old Google Sites
 site. Deployed to GitHub Pages at
-<https://zf6fm64s8j-bit.github.io/elliebfit-site/>. **The custom domain is not cut over yet:**
-`www.elliebfit.com` still serves the old Google Sites site.
+<https://www.elliebfit.com>. **The DNS cutover is done** — Namecheap now points at GitHub Pages
+and the `github.io` preview URL 301s to the custom domain. Two things remain: the TLS certificate
+had not been issued at the end of the session (so `https://` still warns, and Enforce HTTPS is off),
+and the old Google Site has not been unpublished yet.
 
 ## State of play
 
@@ -46,8 +48,16 @@ Three things landed this session:
    archived at `docs/source/waiver-counsel-review.md`; every change is recorded in
    `docs/waiver-revisions.md`.
 
-The remaining work is the go-live sequence (DNS + HTTPS + unpublish Google Sites), the owner
-decisions listed under *Open questions*, plus a short list of accessibility polish items.
+4. **Consult form no longer opens a mailto.** The Send button is wired to the bundle's React
+   `onClick`, which navigates to `mailto:`; the Formspree handler listened at window capture but
+   never stopped the event, so both ran. It now stops the event ahead of every return. The interest
+   chips are also reported correctly instead of defaulting to "Not specified".
+5. **DNS cutover executed.** `CNAME.golive` became `CNAME`, Pages claims `www.elliebfit.com`, and
+   DNS resolves to GitHub on Google/Cloudflare/Quad9. The apex A records redirect to `www`.
+
+The remaining work is HTTPS enforcement once the cert issues, unpublishing Google Sites, removing
+the preview origin from the Apps Script, the owner decisions under *Open questions*, plus a short
+list of accessibility polish items.
 
 ## Next action
 
@@ -84,6 +94,11 @@ deploying, because the change had to be proven before it went out.
 | Bundle unpack cost | replay of the runtime's atob/Blob loop, 3 runs | pass — 76 ms → 4 ms median (desktop) |
 | Sub-pages after font change | fetch + iframe load of 4 pages | pass — 200s, `Archivo 100 900 loaded`, 2 font files instead of 5 |
 | Waiver v1.0 | all 4 pages split and rendered | pass — content correct, version footer on every page, no overlap |
+| Consult form mailto fix | document-capture probe, before vs after | pass — event reached document before the fix, stops at window capture after; validation still shown |
+| Consult form payload | `fetch` stubbed in an iframe, 2 submits | pass — interest `In-home` with no chips touched, `In-home, Virtual` after adding one; nothing sent to Formspree |
+| DNS cutover | `dig` against 3 public resolvers + authoritative | pass — `www` → `zf6fm64s8j-bit.github.io`, apex → 4×`185.199.*`, MX for Google Workspace intact |
+| Live domain serving | `curl --resolve` to GitHub Pages | pass — HTTP 200, 184 KB, new title, fix present in the served HTML |
+| TLS certificate | `gh api .../pages` | **not issued** — `not requested` ~25 min after propagation; Enforce HTTPS still off |
 | Automated a11y suite (axe etc.) | — | not run — no tooling installed |
 | Cross-browser | — | not run — only Chromium via the browser pane |
 
