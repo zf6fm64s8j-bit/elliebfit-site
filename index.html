@@ -274,6 +274,26 @@
       }
       return true;
     }
+    // The chips are multi-select and the build pre-selects "In-home", but the
+    // click handler below only ever saw the last chip pressed -- so a visitor
+    // who left the default alone was reported as "Not specified". Read the
+    // selected state off the chips themselves at send time instead.
+    var INTEREST_LABEL = {
+      'IN-HOME': 'In-home', 'SEMI-PRIVATE': 'Semi-private',
+      'VIRTUAL': 'Virtual', 'FRIDAY CLASS': 'Friday class'
+    };
+    function selectedInterest() {
+      var picked = [];
+      var all = document.querySelectorAll('button');
+      for (var i = 0; i < all.length; i++) {
+        var l = txt(all[i]);
+        if (INTEREST.indexOf(l) !== -1 && chipLum(all[i]) < 0.55) {
+          picked.push(INTEREST_LABEL[l] || l);
+        }
+      }
+      return picked.length ? picked.join(', ') : (interest || 'Not specified');
+    }
+
     // the bundle replaces the DOM after load, so poll briefly until chips exist
     var tries = 0;
     var chipTimer = setInterval(function () {
@@ -292,14 +312,24 @@
         return;
       }
 
-      if (label !== 'SEND REQUEST' || sending) return;
+      if (label !== 'SEND REQUEST') return;
+
+      // This click is ours. The bundle wires this button to its own React
+      // onClick, which sets window.location.href to a mailto: -- so unless the
+      // event stops here the visitor gets their mail client opening on top of
+      // the Formspree send. Stop it ahead of every return below, including
+      // validation failures and re-entrant clicks, not just the success path.
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      if (sending) return;
 
       var f = fieldsFor(btn);
       var payload = {
         name: f.name ? f.name.value.trim() : '',
         email: f.email ? f.email.value.trim() : '',
         message: f.message ? f.message.value.trim() : '',
-        interest: interest || 'Not specified'
+        interest: selectedInterest()
       };
 
       if (!payload.name || !payload.email) {
