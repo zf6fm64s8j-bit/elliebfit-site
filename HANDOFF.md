@@ -5,24 +5,24 @@ host: claude-code
 scope: .
 vcs: git
 branch: main
-head: 47e313934d82365815548e6778b45d470eb98562
+head: 663838ebd7aab73733a326cc9c0cedcbfb6ad70f
 worktree:
   staged: 0
   unstaged: 0
   untracked: 0
 status: active
 verification: pass
-next_action: "Wait for the GitHub Pages TLS certificate on www.elliebfit.com, then set https_enforced=true; after that, unpublish the old Google Site and drop the github.io origin from ALLOWED_ORIGINS."
+next_action: "Unpublish the old Google Site and remove its custom URL, then drop the github.io origin from ALLOWED_ORIGINS in docs/apps-script/Code.gs and redeploy the script."
 ---
 
 # Handoff — Above & Beyond Fitness website (elliebfit.com)
 
 Static marketing site for a Scottsdale personal-training business, replacing an old Google Sites
 site. Deployed to GitHub Pages at
-<https://www.elliebfit.com>. **The DNS cutover is done** — Namecheap now points at GitHub Pages
-and the `github.io` preview URL 301s to the custom domain. Two things remain: the TLS certificate
-had not been issued at the end of the session (so `https://` still warns, and Enforce HTTPS is off),
-and the old Google Site has not been unpublished yet.
+<https://www.elliebfit.com> **over HTTPS**. The cutover is complete: Namecheap points at GitHub
+Pages, the Let's Encrypt certificate covers `www.elliebfit.com` and the apex (issued 2026-08-17,
+renews by 2026-11-15), HTTPS is enforced, and http/apex/`github.io` all 301 to the canonical origin.
+The one remaining step is unpublishing the old Google Site.
 
 ## State of play
 
@@ -98,7 +98,11 @@ deploying, because the change had to be proven before it went out.
 | Consult form payload | `fetch` stubbed in an iframe, 2 submits | pass — interest `In-home` with no chips touched, `In-home, Virtual` after adding one; nothing sent to Formspree |
 | DNS cutover | `dig` against 3 public resolvers + authoritative | pass — `www` → `zf6fm64s8j-bit.github.io`, apex → 4×`185.199.*`, MX for Google Workspace intact |
 | Live domain serving | `curl --resolve` to GitHub Pages | pass — HTTP 200, 184 KB, new title, fix present in the served HTML |
-| TLS certificate | `gh api .../pages` | **not issued** — still `not requested` >1 h after propagation; Enforce HTTPS off |
+| TLS certificate | `openssl s_client` + `gh api` | pass — Let's Encrypt, CN=www.elliebfit.com, covers the apex, valid to 2026-11-15. Issued unprompted ~60 min after propagation; the remove-and-re-add remedy was **not** needed |
+| HTTPS + canonical redirects | `curl` on all four origins | pass — http→https, apex→www, `github.io`→www, all 301; no mixed content |
+| Routes over HTTPS | 18 paths + a 404 | pass — 18×200, unknown path 404s |
+| Forms after cutover | `fetch` from the live page | pass — `https://www.elliebfit.com` accepted, honeypot returned `skipped: spam` (no row written), forged origin rejected. Note the allow-list is https-only, so enforcement was load-bearing |
+| Rendered head on live HTTPS | DOM probe | pass — title, `lang=en`, 22 meta, canonical, og:image, 1 JSON-LD block |
 | Rendered head metadata | DOM probe on the live page | pass — was 0 title / 2 meta / 0 JSON-LD; now title, `lang=en`, 22 meta, 1 canonical, 3 JSON-LD entities, no duplicates |
 | Anchor offset | `scrollIntoView` at 1280 / 375 px | pass — targets land at 88 px / 172 px, clearing the 73 px / 158 px header; no horizontal overflow |
 | Target size | measured nav links | pass — 12-13 px → 44 px desktop, 30 px mobile (WCAG 2.2 SC 2.5.8 AA floor is 24 px) |
