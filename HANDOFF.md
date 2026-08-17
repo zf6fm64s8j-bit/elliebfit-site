@@ -5,7 +5,7 @@ host: claude-code
 scope: .
 vcs: git
 branch: main
-head: 8c58e383518ec1917b811bae7ac46d47f59a57a6
+head: 47e313934d82365815548e6778b45d470eb98562
 worktree:
   staged: 0
   unstaged: 0
@@ -98,7 +98,12 @@ deploying, because the change had to be proven before it went out.
 | Consult form payload | `fetch` stubbed in an iframe, 2 submits | pass — interest `In-home` with no chips touched, `In-home, Virtual` after adding one; nothing sent to Formspree |
 | DNS cutover | `dig` against 3 public resolvers + authoritative | pass — `www` → `zf6fm64s8j-bit.github.io`, apex → 4×`185.199.*`, MX for Google Workspace intact |
 | Live domain serving | `curl --resolve` to GitHub Pages | pass — HTTP 200, 184 KB, new title, fix present in the served HTML |
-| TLS certificate | `gh api .../pages` | **not issued** — `not requested` ~25 min after propagation; Enforce HTTPS still off |
+| TLS certificate | `gh api .../pages` | **not issued** — still `not requested` >1 h after propagation; Enforce HTTPS off |
+| Rendered head metadata | DOM probe on the live page | pass — was 0 title / 2 meta / 0 JSON-LD; now title, `lang=en`, 22 meta, 1 canonical, 3 JSON-LD entities, no duplicates |
+| Anchor offset | `scrollIntoView` at 1280 / 375 px | pass — targets land at 88 px / 172 px, clearing the 73 px / 158 px header; no horizontal overflow |
+| Target size | measured nav links | pass — 12-13 px → 44 px desktop, 30 px mobile (WCAG 2.2 SC 2.5.8 AA floor is 24 px) |
+| Enter-to-submit | synthetic keydown on each field | pass — Enter in name/email runs the send path; textarea keeps Enter for newlines |
+| `:focus-visible` ring | cascade inspection | **partial** — rule resolves to `outline: rgb(32,52,46) solid 3px`, but Chrome grants no keyboard modality to a background iframe in a hidden pane, so the ring was never rendered on screen. Confirm with a real Tab press. |
 | Automated a11y suite (axe etc.) | — | not run — no tooling installed |
 | Cross-browser | — | not run — only Chromium via the browser pane |
 
@@ -156,6 +161,17 @@ deploying, because the change had to be proven before it went out.
   fixed` content that falls outside the page's content box, so the footer silently disappeared from
   every page. It must sit at `bottom: 0`, with the `@page` bottom margin enlarged to keep flowed
   content clear of it.
+- **Leaving anything the page needs at runtime in the static document** — rejected: the runtime ends
+  with `document.documentElement.replaceWith()`, which discards the original document wholesale. The
+  full SEO head lived there and was gone from the rendered DOM — no `<title>` element at all, 2 meta
+  tags, no JSON-LD, no `lang`. Only the template's `<helmet>` survives; `docs/source/sync-head-meta.py`
+  mirrors the static head into it. Raw fetches were always fine, which is why this hid for so long.
+- **Assuming the homepage inherits `assets/site.css`'s resets** — rejected: it does not load site.css
+  at all. `min-height` on a padded element therefore added to the padding and took the header from
+  70 px to 97 px. Set `box-sizing` explicitly in any rule added to `abf-responsive`.
+- **A bare `required` attribute on the bundle's inputs** — rejected: it does not survive the
+  template's React compile, and no `<form>` wraps the fields to enforce it. Use `aria-required`;
+  the inline handler already does the validation.
 - **Intercepting the bundle's buttons without stopping the event** — rejected: the consult form's
   Send button is wired to the bundle's own React `onClick`, which sets `window.location.href` to a
   `mailto:`. The Formspree handler in the first inline `<script>` listens at *window capture*, which
