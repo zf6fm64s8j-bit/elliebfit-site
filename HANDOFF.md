@@ -176,6 +176,11 @@ deploying, because the change had to be proven before it went out.
 - **A bare `required` attribute on the bundle's inputs** — rejected: it does not survive the
   template's React compile, and no `<form>` wraps the fields to enforce it. Use `aria-required`;
   the inline handler already does the validation.
+- **Assuming a script referenced from `<helmet>` runs once** — rejected: the homepage evaluated
+  `assets/analytics.js` **twice** from a single fetch and a single surviving `<script>` tag, because
+  the runtime both re-creates scripts to make them execute and hoists the helmet into `<head>`. It
+  sent two `page_view` hits and would have doubled every traffic figure. Anything loaded from the
+  helmet with a side effect needs its own `window`-level idempotence guard.
 - **Intercepting the bundle's buttons without stopping the event** — rejected: the consult form's
   Send button is wired to the bundle's own React `onClick`, which sets `window.location.href` to a
   `mailto:`. The Formspree handler in the first inline `<script>` listens at *window capture*, which
@@ -243,6 +248,25 @@ gh api repos/zf6fm64s8j-bit/elliebfit-site/pages/builds/latest --jq '.status + "
 - **DNS**: Namecheap (`dns1/dns2.registrar-servers.com`). Apex currently points at Google Sites.
 - **PDF generation** requires `/Applications/Google Chrome.app`. `fontTools` is not installed.
 - No credentials are stored in this repo. The Apps Script endpoint is a public URL, not a secret.
+
+## Analytics
+
+`assets/analytics.js` is the single switch. It is **off in the repo**: `GA_MEASUREMENT_ID` is blank,
+so no script loads, no cookie is set, and no third-party request is made. Paste the GA4 Measurement
+ID into that one constant and it turns on for the homepage and all 14 hand-written pages at once.
+
+Events, all free of personal data by design — the consult textarea routinely carries injuries and
+health conditions, so nothing the visitor typed is ever a parameter:
+
+| Event | Fired from | Parameters |
+|---|---|---|
+| `consult_submit` | `index.html` inline handler | none |
+| `consult_error` | `index.html` inline handler | `reason: validation \| transport` |
+| `form_submit` | `assets/forms.js` | `form_name` (fixed label) |
+| `pdf_open` | `assets/analytics.js` | `file_name` |
+
+**GA4 sets cookies**, so a consent banner is a live question for EU/UK visitors. The site does not
+have one. Advertising signals and ad personalization are disabled in the config.
 
 ## Read next
 
