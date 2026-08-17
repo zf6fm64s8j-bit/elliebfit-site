@@ -2,8 +2,9 @@
 
 Static site for elliebfit.com, hosted on GitHub Pages. No build step: edit, commit, push.
 
-- **Homepage** — `index.html`, a single bundled artifact (~1.6 MB) with all styles, scripts, fonts
-  and photos inlined. It makes **no external requests** at runtime.
+- **Homepage** — `index.html`, a bundled artifact (~180 KB) whose styles, scripts and template are
+  inlined. Photos and fonts are **not** inlined: they load from `assets/photos/` and `assets/fonts/`
+  so they cache, download in parallel, and lazy-load. It makes no third-party requests.
 - **Every other page** — hand-written HTML sharing `assets/site.css` and the self-hosted brand
   fonts in `assets/fonts/`.
 
@@ -21,13 +22,14 @@ Static site for elliebfit.com, hosted on GitHub Pages. No build step: edit, comm
 
 ```
 index.html              bundled homepage
-assets/                 site.css, forms.js, fonts, apple-touch-icon
+assets/                 site.css, forms.js, fonts, photos, apple-touch-icon
 forms/                  client forms hub
   client-information/   health history questionnaire
   par-q/                PAR-Q readiness questionnaire
 free-class-sign-up/     Friday class sign-up (embeds a Google Form)
 recipes/  pwr-moves/    content pages
-docs/                   client PDFs, Apps Script source, brand guide, PDF generators
+docs/                   client PDFs, waiver revision log, Apps Script source, brand guide
+  source/               PDF + photo generators, photos-src/ originals, counsel review memo
 404.html                branded not-found page
 <old-slug>/             redirect stubs preserving inbound Google Sites URLs
 ```
@@ -45,14 +47,33 @@ Setup and redeploy instructions for the receiver are in
 [`docs/apps-script/README.md`](docs/apps-script/README.md). All forms fall back to opening a
 pre-filled email if the request fails, so a submission is never silently lost.
 
-## Client PDFs
+## Homepage photos
 
-`docs/liability-waiver.pdf` and `docs/late-cancel-policy.pdf` are generated, not hand-made.
-Regenerate with (requires Google Chrome installed):
+The five homepage photos are generated from the originals in `docs/source/photos-src/` — which are
+the **only** copies, since they no longer live inside `index.html`. To replace one, drop the new
+file into `photos-src/` under the same base name (any of `.jpg/.jpeg/.png/.webp`) and re-run:
 
 ```bash
-python3 docs/source/build-client-pdfs.py
+python3 docs/source/optimize-bundle.py
 ```
+
+That re-encodes every photo to WebP in `assets/photos/`, rewrites the bundle's template and
+manifest, and refreshes the hero/font preload hints. It is idempotent.
+
+## Client PDFs
+
+`docs/liability-waiver.pdf` and `docs/late-cancel-policy.pdf` are generated, not hand-made. Both
+require Google Chrome installed.
+
+```bash
+python3 docs/source/build-waiver.py        # liability waiver — carries a version + effective date
+python3 docs/source/build-client-pdfs.py   # late-cancellation policy
+```
+
+The waiver has its own builder because it is versioned: `VERSION` and `EFFECTIVE` in
+`build-waiver.py` are stamped onto every page, and every change is recorded in
+[`docs/waiver-revisions.md`](docs/waiver-revisions.md). Bump both constants and add a revision entry
+when the text changes — never regenerate it silently.
 
 ## Deploy
 

@@ -1,18 +1,18 @@
 ---
 schema: session-handoff/1
-updated: 2026-08-16T21:40:00Z
+updated: 2026-08-17T00:55:00Z
 host: claude-code
 scope: .
 vcs: git
 branch: main
-head: e225378fc09931aa56ae300038f1ed3bc9b2efe3
+head: 013cf5f1df03435a987a4fa4ee1bb62f5b02a3a6
 worktree:
   staged: 0
   unstaged: 0
   untracked: 0
 status: active
 verification: pass
-next_action: "Wait for counsel's feedback on the waiver draft; when the user is ready to go live, restore CNAME.golive to CNAME and run the DNS cutover."
+next_action: "Confirm the waiver's open owner decisions (minors, transportation, fee clause) in docs/waiver-revisions.md; when the user is ready to go live, restore CNAME.golive to CNAME and run the DNS cutover."
 ---
 
 # Handoff — Above & Beyond Fitness website (elliebfit.com)
@@ -24,23 +24,36 @@ site. Deployed to GitHub Pages at
 
 ## State of play
 
-The site is content-complete and deployed to the preview URL. The homepage is a single bundled
-artifact (`index.html`, ~1.6 MB, all CSS/JS/fonts/photos inlined, zero external requests at
-runtime); every other page is hand-written static HTML sharing `assets/site.css`. All three forms
-work end to end and were verified against live endpoints this session. Branding across every page
-matches the *Desert coral & sage* brand guide, including the three-chevron Ascent mark, self-hosted
-Barlow Condensed + Archivo, and the guide's component rules. An accessibility pass landed: all
-coral buttons and links now clear WCAG AA, the homepage has real headings and landmarks, and the
-consult form has labels. A rebranded liability waiver and cancellation policy ship as PDFs; a
-revised waiver (draft v2) sits unlinked in `docs/draft/` awaiting an Arizona attorney's review.
+The site is content-complete and deployed to the preview URL. Every page except the homepage is
+hand-written static HTML sharing `assets/site.css`; the homepage is a bundled artifact
+(`index.html`) whose CSS/JS/template are inlined but whose photos and fonts are now real files.
+All three forms work end to end and were verified against live endpoints. Branding matches the
+*Desert coral & sage* guide throughout, and the accessibility pass (AA contrast, headings,
+landmarks, form labels) is in place.
 
-The remaining work is a go-live sequence (DNS + HTTPS + unpublish Google Sites) plus a short list of
-accessibility polish items.
+Three things landed this session:
+
+1. **New hero photo.** `hero_dog5.png` replaced the previous grade — the coral tank now agrees with
+   the brand coral, and the dog is looking up at Ellen. Source lives in `docs/source/photos-src/`.
+2. **Load-time work.** `index.html` went from 1,472 KB to 179 KB (1,063 KB → 90 KB gzipped) by
+   externalising the five photos as WebP and the four latin font subsets, and dropping eight
+   non-latin subsets the site never uses. First-paint critical path is now ~284 KB against ~1,063 KB
+   before, with 163 KB of below-fold photos genuinely deferred. The bundle's main-thread unpack fell
+   from 76 ms to 4 ms on desktop. `assets/site.css` also stopped fetching the same variable Archivo
+   file four times.
+3. **Liability waiver v1.0 published.** The draft banner is gone and `docs/liability-waiver.pdf` is
+   the official versioned document, linked from `/forms/`. It applies the drafting review now
+   archived at `docs/source/waiver-counsel-review.md`; every change is recorded in
+   `docs/waiver-revisions.md`.
+
+The remaining work is the go-live sequence (DNS + HTTPS + unpublish Google Sites), the owner
+decisions listed under *Open questions*, plus a short list of accessibility polish items.
 
 ## Next action
 
-Hold for counsel's feedback on the waiver draft. When the user says they are ready to go live,
-restore the custom domain and walk the Namecheap DNS change:
+Confirm the waiver's open business decisions with Ellen (minors, transportation, fee clause — see
+`docs/waiver-revisions.md`). When the user says they are ready to go live, restore the custom
+domain and walk the Namecheap DNS change:
 
 ```bash
 cd ~/AI_projects/elliebfit-site && git mv CNAME.golive CNAME && \
@@ -50,7 +63,9 @@ cd ~/AI_projects/elliebfit-site && git mv CNAME.golive CNAME && \
 
 ## Verification
 
-All run against the deployed preview this session.
+The first ten rows were run against the deployed preview in an earlier session; the rows added this
+session (from *Homepage after externalising* down) were run against a local `http.server` before
+deploying, because the change had to be proven before it went out.
 
 | Check | Command | Result |
 |---|---|---|
@@ -64,6 +79,11 @@ All run against the deployed preview this session.
 | Bundle integrity | JSON parse of all four `__bundler/*` blocks | pass |
 | Mobile layout | 375 / 900 / 1280 px viewport probes | pass — 0 horizontal overflow |
 | PDF regeneration | `python3 docs/source/build-client-pdfs.py` | pass |
+| Homepage after externalising | reload, DOM + network probe | pass — 5 photos 200/correct natural size, 4 fonts 200, no bundler error, h1 intact |
+| Hero preload | resource timing | pass — hero + 4 fonts start at 20 ms during parse; the 4 below-fold photos deferred to 100 ms |
+| Bundle unpack cost | replay of the runtime's atob/Blob loop, 3 runs | pass — 76 ms → 4 ms median (desktop) |
+| Sub-pages after font change | fetch + iframe load of 4 pages | pass — 200s, `Archivo 100 900 loaded`, 2 font files instead of 5 |
+| Waiver v1.0 | all 4 pages split and rendered | pass — content correct, version footer on every page, no overlap |
 | Automated a11y suite (axe etc.) | — | not run — no tooling installed |
 | Cross-browser | — | not run — only Chromium via the browser pane |
 
@@ -80,7 +100,14 @@ All run against the deployed preview this session.
   fresh URL if abused.
 - **`ALLOWED_ORIGINS` in `docs/apps-script/Code.gs` still contains the `zf6fm64s8j-bit.github.io`
   preview origin.** Remove it after cutover.
-- **Draft waiver is legally unreviewed.** It carries a draft banner and is deliberately not linked.
+- **The published waiver has not been approved by an attorney.** v1.0 applies a drafting review that
+  states on its face that it is not legal advice and not a substitute for an Arizona-licensed
+  attorney. It was published at the owner's direction. `docs/waiver-revisions.md` records this and
+  lists the decisions still open.
+- **The photo originals exist only in `docs/source/photos-src/`.** They are no longer inside
+  `index.html`. Deleting that directory loses them; it is committed for that reason.
+- **`build-waiver.py` owns the waiver; `build-client-pdfs.py` no longer does.** The waiver carries a
+  version and effective date and must not be regenerated as a side effect of an unrelated build.
 
 ## Do not repeat
 
@@ -107,12 +134,25 @@ All run against the deployed preview this session.
 - **Trusting a form's success state as proof of delivery** — rejected: a cross-origin iframe
   navigation looks identical whether the server accepted or rejected. Only assert delivery when the
   response body can actually be read.
+- **A `<picture>` element for WebP/JPEG fallback on the homepage photos** — rejected: all five
+  `<img>` tags live inside the `<x-dc>` template the DC runtime compiles, and changing their
+  structure risks the compiler. WebP alone is Baseline (Safari 14, 2020); plain `<img>` stays.
+- **A negative `bottom` on the waiver PDF's running footer** — rejected: Chrome clips `position:
+  fixed` content that falls outside the page's content box, so the footer silently disappeared from
+  every page. It must sit at `bottom: 0`, with the `@page` bottom margin enlarged to keep flowed
+  content clear of it.
+- **Timing the bundle's paint in the Browser pane** — rejected as a measurement: the pane reports
+  `visibilityState: hidden`, which defers paint and clamps `setInterval` to ~1 s, so FCP/LCP and any
+  polling-based A/B are meaningless there. Measure the synchronous unpack cost instead, and read
+  layout back from the DOM rather than from screenshots of scrolled content.
 
 ## Outstanding tasks
 
 | ID | Pri | Status | Task | Done when | Opened |
 |----|-----|--------|------|-----------|--------|
-| T-20260816-63 | P1 | blocked | Apply counsel's edits to the waiver draft, remove the draft banner, replace the live PDF | Reviewed waiver is linked from `/forms/` | 2026-08-16 |
+| T-20260816-63 | P1 | done | Apply the review to the waiver, remove the draft banner, replace the live PDF | Waiver v1.0 linked from `/forms/` | 2026-08-16 |
+| T-20260816-w1 | P1 | open | Owner decisions on the waiver: accept minors under this form or use a separate minor-participation form; confirm transportation is never provided; keep or drop the fee clause | Each decided, and `build-waiver.py` bumped to v1.1 if the text changes | 2026-08-16 |
+| T-20260816-w2 | P2 | open | Version and date the PAR-Q and health questionnaire PDFs the way the waiver now is — § 4 incorporates them by reference | Both carry a version + effective date, retained with the signed waiver | 2026-08-16 |
 | T-20260816-yy | P1 | open | DNS cutover: restore `CNAME`, set custom domain, Namecheap records, Enforce HTTPS, unpublish Google Sites | `https://www.elliebfit.com` serves this site over HTTPS | 2026-08-16 |
 | T-20260816-o5 | P2 | open | Remove the `github.io` preview origin from `ALLOWED_ORIGINS` and redeploy the Apps Script | Only elliebfit.com origins accepted | 2026-08-16 |
 | T-20260816-0z | P2 | open | Label PAR-Q radio groups with `aria-labelledby` so the question is announced with the options | Screen reader reads the question before Yes/No | 2026-08-16 |
@@ -125,8 +165,8 @@ All run against the deployed preview this session.
   system grotesque when printing, so PDF body text is not the brand face (headings are — Barlow
   Condensed embeds fine). Fix is to install Archivo locally so Chrome can embed it. Owner: user.
   Not blocking.
-- **Waiver draft is 3 pages** (guide specifies 11pt body; the original was ~9pt on 1 page). Owner:
-  user, after counsel's edits.
+- **The waiver is now 4 pages** (guide specifies 11pt body; the original was ~9pt on 1 page). The
+  review's recommendations added length on purpose. Owner: user, if a shorter form is wanted.
 - **Rates are duplicated** on `/pwr-moves/` and the homepage. Owner: user — link to the rates
   section instead if that duplication is unwanted.
 
@@ -164,8 +204,11 @@ gh api repos/zf6fm64s8j-bit/elliebfit-site/pages/builds/latest --jq '.status + "
 3. `assets/forms.js` — client-side submission, validation, and the email fallback.
 4. `docs/brand/Above & Beyond Fitness Brand Guide.dc.html` — the canonical design system.
 5. `assets/site.css` — tokens and components for every page except the homepage.
-6. `docs/draft/liability-waiver-draft-v2.pdf` — the unreviewed waiver awaiting counsel.
-7. `index.html` — the bundled homepage; read the Blockers section above before editing it.
+6. `docs/waiver-revisions.md` — what v1.0 of the waiver changed, why, and what the owner still has
+   to decide. `docs/source/waiver-counsel-review.md` is the underlying drafting review.
+7. `docs/source/optimize-bundle.py` — how the homepage photos and fonts were moved out of the
+   bundle, and how to replace a photo.
+8. `index.html` — the bundled homepage; read the Blockers section above before editing it.
 
 ---
 

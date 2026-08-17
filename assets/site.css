@@ -11,14 +11,12 @@
   src:url(fonts/barlow-condensed-600.woff2) format('woff2');}
 @font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;
   src:url(fonts/barlow-condensed-700.woff2) format('woff2');}
-@font-face{font-family:'Archivo';font-style:normal;font-weight:400;font-display:swap;
+/* Archivo is a variable font: one file carries the whole 100-900 axis. The four
+   archivo-*.woff2 files were byte-identical, so declaring a weight range here
+   replaces four downloads of the same 35K with one. Barlow Condensed below is
+   static, so it keeps a file per weight. */
+@font-face{font-family:'Archivo';font-style:normal;font-weight:100 900;font-display:swap;
   src:url(fonts/archivo-400.woff2) format('woff2');}
-@font-face{font-family:'Archivo';font-style:normal;font-weight:500;font-display:swap;
-  src:url(fonts/archivo-500.woff2) format('woff2');}
-@font-face{font-family:'Archivo';font-style:normal;font-weight:600;font-display:swap;
-  src:url(fonts/archivo-600.woff2) format('woff2');}
-@font-face{font-family:'Archivo';font-style:normal;font-weight:700;font-display:swap;
-  src:url(fonts/archivo-700.woff2) format('woff2');}
 
 /* ---------- tokens ---------- */
 
