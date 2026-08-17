@@ -5,7 +5,7 @@ host: claude-code
 scope: .
 vcs: git
 branch: main
-head: 4d1eafc34a85b52b03d90a7ba067e21270a67fea
+head: e2f724838d5b28cf05f5af48506e43a43820529c
 worktree:
   staged: 0
   unstaged: 0
@@ -141,6 +141,16 @@ deploying, because the change had to be proven before it went out.
   fixed` content that falls outside the page's content box, so the footer silently disappeared from
   every page. It must sit at `bottom: 0`, with the `@page` bottom margin enlarged to keep flowed
   content clear of it.
+- **Intercepting the bundle's buttons without stopping the event** — rejected: the consult form's
+  Send button is wired to the bundle's own React `onClick`, which sets `window.location.href` to a
+  `mailto:`. The Formspree handler in the first inline `<script>` listens at *window capture*, which
+  runs first but does not by itself prevent React's handler — so both fired and the visitor's mail
+  client opened on top of a successful send. Any handler that takes over a bundle control must call
+  `e.preventDefault()` **and** `e.stopImmediatePropagation()`, and must do it before every early
+  return, not only the success path.
+- **Tracking the interest chips from click events alone** — rejected: they are multi-select and the
+  build pre-selects "In-home", so a visitor who never touches them produces no click and was
+  reported as "Not specified". Read the chips' selected state off the DOM at send time.
 - **Timing the bundle's paint in the Browser pane** — rejected as a measurement: the pane reports
   `visibilityState: hidden`, which defers paint and clamps `setInterval` to ~1 s, so FCP/LCP and any
   polling-based A/B are meaningless there. Measure the synchronous unpack cost instead, and read
