@@ -12,7 +12,7 @@ worktree:
   untracked: 0
 status: active
 verification: pass
-next_action: "Paste the Cloudflare Web Analytics site token into assets/analytics.js, and click Start authentication in Google Admin now that DKIM has propagated. Deferred audit items: local-search pages, rates examples, privacy notice, staging environment."
+next_action: "Confirm GA4 is reporting in Realtime, and click Start authentication in Google Admin now that DKIM has propagated. Deferred audit items: local-search pages, rates examples, privacy notice, staging environment."
 ---
 
 # Handoff — Above & Beyond Fitness website (elliebfit.com)
@@ -65,7 +65,7 @@ This session landed:
 8. **Copy correction.** "13 years" was written around 2023 and never updated; it is now 16 years in
    all three places.
 9. **Waiver v1.1.** Section 12 expanded for minors now that ages 8-92 stays advertised.
-10. **Analytics wired but off.** `assets/analytics.js` holds the only switch; `CF_BEACON_TOKEN` is
+10. **Analytics live.** GA4 `G-2MEJP88X3V` via `assets/analytics.js`, the single switch. Cloudflare was tried in between and reverted — no conversion tracking, and onboarding could not be completed.
    blank, so nothing loads until a token is pasted in. Built for GA4 first, then switched to
    Cloudflare Web Analytics — no cookies, no consent banner, but no conversion tracking either.
 11. **Email authentication.** SPF and DKIM restored after the DNS edit dropped the apex TXT records.
@@ -280,29 +280,34 @@ gh api repos/zf6fm64s8j-bit/elliebfit-site/pages/builds/latest --jq '.status + "
 
 ## Analytics
 
-`assets/analytics.js` is the single switch. It is **off in the repo**: `CF_BEACON_TOKEN` is blank,
-so no script loads, no cookie is set, and no third-party request is made. Paste the Cloudflare Web
-Analytics site token into that one constant and it turns on for the homepage and all 14
-hand-written pages at once.
+**Google Analytics 4, live.** `assets/analytics.js` is the single switch and holds the Measurement
+ID `G-2MEJP88X3V`; the homepage bundle and all 14 hand-written pages load that one file, so there is
+one place to change. Blanking `GA_MEASUREMENT_ID` turns everything off again -- no script, no
+cookie, no third-party request.
 
-Cloudflare was chosen over GA4 after the GA4 version was already built and tested. It sets **no
-cookies and collects no personal data**, so the site needs no consent banner, and it does not
-require moving DNS or proxying through Cloudflare.
+Cloudflare Web Analytics was built and deployed in between, then reverted: its onboarding could not
+be completed, and it has no programmatic API, so conversions could not be tracked at all. GA4 keeps
+the four events.
 
-**The trade-off, recorded because it is easy to forget:** Cloudflare Web Analytics is
-dashboard-only with no programmatic API, so **conversions cannot be tracked**. The four events the
-GA4 build carried (`consult_submit`, `consult_error`, `form_submit`, `pdf_open`) were removed. Page
-views, referrers, countries and Core Web Vitals only. Conversions are still countable outside
-analytics: consult requests arrive in Ellen's inbox via Formspree, and questionnaire submissions
-land as rows in the Google Sheet via Apps Script. The bottom of `assets/analytics.js` records where
-the four call sites were, so re-adding them is mechanical if a tool that can receive events is ever
-introduced.
+| Event | Fired from | Parameters |
+|---|---|---|
+| `consult_submit` | `index.html` inline handler | none |
+| `consult_error` | `index.html` inline handler | `reason: validation \| transport` |
+| `form_submit` | `assets/forms.js` | `form_name` (fixed label) |
+| `pdf_open` | `assets/analytics.js` | `file_name` |
 
-The homepage evaluates `analytics.js` twice from a single fetch and a single surviving `<script>`
-tag, so the file carries a `window.__abfAnalyticsLoaded` guard. Without it every page-view figure
-would double. See *Do not repeat*.
+**Privacy rule, non-negotiable:** no free text, name, or email is ever an event parameter. The
+consult form's "working toward" textarea routinely carries injuries and health conditions.
+`allow_google_signals` and `allow_ad_personalization_signals` are both off.
 
-## Read next
+**GA4 sets cookies**, so a consent banner is a live question for EU/UK visitors. The site does not
+have one; traffic is expected to be almost entirely local to Arizona.
+
+Do not paste Google's stock snippet into pages. Three reasons, all learned here: it would need
+editing in 15 places; on the homepage it double-fires without the `window.__abfAnalyticsLoaded`
+guard, because the runtime evaluates helmet scripts twice; and it leaves ad signals on by default.
+
+## Read next## Read next
 
 1. `README.md` — deploy and DNS cutover steps, and the warning about overwriting `index.html`.
 2. `docs/apps-script/README.md` — how form delivery works and how to redeploy the receiver.

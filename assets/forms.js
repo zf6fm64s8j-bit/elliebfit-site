@@ -81,6 +81,9 @@
     function succeed() {
       card.innerHTML = window.__DONE__;
       card.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      // The form label only -- these questionnaires carry medical history, and
+      // none of the answers may leave the page for anywhere but the sheet.
+      if (window.gtag) window.gtag('event', 'form_submit', { form_name: formName });
     }
 
     form.addEventListener('submit', function (e) {

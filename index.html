@@ -358,6 +358,7 @@
 
       if (!payload.name || !payload.email) {
         flash(btn, 'Please add your name and email so Ellen can reply.', 'error');
+        if (window.gtag) window.gtag('event', 'consult_error', { reason: 'validation' });
         return;
       }
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(payload.email)) {
@@ -391,11 +392,15 @@
         if (!r.ok) throw new Error('HTTP ' + r.status);
         flash(btn, 'Thanks ' + payload.name.split(' ')[0] +
           ' — your request is on its way. Ellen usually replies the same day.', 'ok');
+        // Name/email/message are deliberately not passed: the message field
+        // routinely carries injuries and health conditions.
+        if (window.gtag) window.gtag('event', 'consult_submit');
         if (f.name) f.name.value = '';
         if (f.email) f.email.value = '';
         if (f.message) f.message.value = '';
       }).catch(function () {
         flash(btn, "That didn't go through — opening your email app instead.", 'error');
+        if (window.gtag) window.gtag('event', 'consult_error', { reason: 'transport' });
         mailtoFallback(payload);
       }).then(function () {
         sending = false;
