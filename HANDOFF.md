@@ -79,10 +79,14 @@ This session landed:
 
 ## Next action
 
-One owner item, not blocking: click **Start authentication** in Google Admin now that the DKIM
-record has propagated. GA4 is live and should be confirmed in Realtime after the next visit. Then
-optionally DMARC (`_dmarc`, `v=DMARC1; p=none; rua=mailto:ellen@elliebfit.com`) and the Google
-domain-verification TXT.
+Two confirmations, neither blocking. **GA4:** load the site from a device off the NextDNS resolver
+(a phone on cellular) and check Realtime — this network sinkholes Google's analytics domains, so it
+will always read zero from here. **Email:** send one message from `ellen@elliebfit.com` and check
+the headers show `SPF: PASS`, `DKIM: PASS`, `DMARC: PASS`; DKIM signing can lag the *Start
+authentication* click by up to an hour.
+
+Optional and genuinely low priority: the Google domain-verification TXT, and moving DMARC from
+`p=none` to `p=quarantine` once a few weeks of clean aggregate reports have arrived.
 
 Outstanding from the site audit, all deliberately deferred: local-search landing pages, rates
 examples, a privacy notice, and a staging environment (the `github.io` preview now 301s to
