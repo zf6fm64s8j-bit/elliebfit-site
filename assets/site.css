@@ -174,7 +174,7 @@ a.card:hover{ border-color: var(--coral); }
 }
 
 .recipe-meta{ display:flex; flex-wrap:wrap; gap:.5rem; margin:1rem 0 1.5rem; }
-.recipe-meta span{
+.recipe-meta > span{
   background: var(--sage-tint); color: var(--sage-deep);
   font-size:11px; letter-spacing:.18em; text-transform:uppercase; font-weight:600;
   padding:.45rem .8rem; border-radius: var(--r-pill);

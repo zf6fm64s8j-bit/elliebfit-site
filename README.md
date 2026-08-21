@@ -60,6 +60,19 @@ python3 docs/source/optimize-bundle.py
 That re-encodes every photo to WebP in `assets/photos/`, rewrites the bundle's template and
 manifest, and refreshes the hero/font preload hints. It is idempotent.
 
+If the homepage template is re-exported, restore the stable consult-form hooks and dynamic class
+time markup after importing the new template:
+
+```bash
+python3 docs/source/sync-homepage-runtime.py
+python3 docs/source/sync-head-meta.py
+```
+
+Both commands are idempotent and fail closed if the generated structure no longer matches the
+expected source. The class remains canonical at 10:00 a.m. `America/Phoenix`; `assets/class-time.js`
+derives the next Friday's `America/Chicago` time so the displayed abbreviation changes between CST
+and CDT without moving the Arizona class time.
+
 ## Client PDFs
 
 `docs/liability-waiver.pdf` and `docs/late-cancel-policy.pdf` are generated, not hand-made. Both
