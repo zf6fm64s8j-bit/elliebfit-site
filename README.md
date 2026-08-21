@@ -4,7 +4,8 @@ Static site for elliebfit.com, hosted on GitHub Pages. No build step: edit, comm
 
 - **Homepage** — `index.html`, a bundled artifact (~180 KB) whose styles, scripts and template are
   inlined. Photos and fonts are **not** inlined: they load from `assets/photos/` and `assets/fonts/`
-  so they cache, download in parallel, and lazy-load. It makes no third-party requests.
+  so they cache, download in parallel, and lazy-load. GA4 is the only third-party page-view script;
+  the consultation form submits to Formspree.
 - **Every other page** — hand-written HTML sharing `assets/site.css` and the self-hosted brand
   fonts in `assets/fonts/`.
 
@@ -57,8 +58,9 @@ file into `photos-src/` under the same base name (any of `.jpg/.jpeg/.png/.webp`
 python3 docs/source/optimize-bundle.py
 ```
 
-That re-encodes every photo to WebP in `assets/photos/`, rewrites the bundle's template and
-manifest, and refreshes the hero/font preload hints. It is idempotent.
+That re-encodes every photo plus responsive below-fold variants to WebP in `assets/photos/`,
+rewrites the bundle's template and manifest, and refreshes the hero/font preload hints. It is
+idempotent.
 
 If the homepage template is re-exported, restore the stable consult-form hooks and dynamic class
 time markup after importing the new template:
@@ -98,10 +100,19 @@ gh api repos/zf6fm64s8j-bit/elliebfit-site/pages/builds/latest --jq '.status + "
 
 Preview locally with `python3 -m http.server 8000`.
 
-## Point elliebfit.com at it — not yet done
+Before committing, run the local SEO and link contract. It validates unique
+indexable canonicals against the sitemap, required search/social metadata, one
+H1 per indexable page, JSON-LD syntax, and local link targets:
 
-`www.elliebfit.com` still serves the old Google Sites site. DNS is managed at **Namecheap**
-(nameservers `dns1/dns2.registrar-servers.com`).
+```bash
+python3 docs/source/check-seo.py
+```
+
+## Historical DNS cutover record
+
+The cutover is complete and `www.elliebfit.com` serves this GitHub Pages repository. DNS is managed
+at **Namecheap** (nameservers `dns1/dns2.registrar-servers.com`). The procedure below is retained as
+the recovery record; do not repeat it during an ordinary deploy.
 
 The custom domain is currently parked so the `github.io` preview URL stays browsable: the domain
 file is `CNAME.golive` rather than `CNAME`. To go live:

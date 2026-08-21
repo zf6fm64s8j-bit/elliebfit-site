@@ -68,6 +68,7 @@ FONT_BY_UUID = {
 }
 
 WEBP_QUALITY = 80
+RESPONSIVE_WIDTHS = (480, 672, 768)
 
 # Photos that must survive a print/PDF or a browser with no WebP support are not
 # in play here, so a single modern format is enough. WebP is Baseline (Safari 14,
@@ -138,7 +139,7 @@ def stash_originals(manifest):
 
 
 def build_photos():
-    """Encode every photo in photos-src/ to WebP in assets/photos/."""
+    """Encode every photo plus responsive variants to WebP."""
     os.makedirs(OUT_DIR, exist_ok=True)
     written = {}
     for _, (name, is_hero) in PHOTOS.items():
@@ -157,6 +158,15 @@ def build_photos():
             im = im.convert('RGB')
         out = os.path.join(OUT_DIR, f'{name}.webp')
         im.save(out, 'WEBP', quality=WEBP_QUALITY, method=6)
+        for width in (() if is_hero else RESPONSIVE_WIDTHS):
+            if width >= im.width:
+                continue
+            height = round(im.height * width / im.width)
+            resized = im.resize((width, height), Image.Resampling.LANCZOS)
+            resized.save(
+                os.path.join(OUT_DIR, f'{name}-{width}.webp'),
+                'WEBP', quality=WEBP_QUALITY, method=6,
+            )
         written[name] = (im.size, os.path.getsize(src), os.path.getsize(out))
         print(f'  {name:14} {im.size[0]}x{im.size[1]:<5} '
               f'{os.path.getsize(src)/1024:6.0f}K -> {os.path.getsize(out)/1024:6.0f}K webp'
@@ -171,7 +181,7 @@ def main():
 
     print('photos:')
     stash_originals(manifest)
-    build_photos()
+    written = build_photos()
 
     # --- rewrite the template ------------------------------------------------
     for prefix, (name, is_hero) in PHOTOS.items():
@@ -192,6 +202,51 @@ def main():
         template = (template[:hero_img.end()]
                     + ' fetchpriority="high" decoding="async"'
                     + template[hero_img.end():])
+
+    # Let mobile browsers choose an appropriately sized file instead of
+    # downloading the desktop source and discarding most of its pixels. Keep a
+    # plain <img>: the generated runtime is intentionally not asked to compile a
+    # new <picture> structure.
+    for _, (name, _) in PHOTOS.items():
+        natural_width, natural_height = written[name][0]
+        pattern = re.compile(
+            r'<img\b(?=[^>]*\bsrc="assets/photos/' + re.escape(name) + r'\.webp")[^>]*>'
+        )
+        hits = list(pattern.finditer(template))
+        if len(hits) != 1:
+            die(f'{name}: expected one image tag, found {len(hits)}')
+        tag = hits[0].group(0)
+        for attr in ('srcset', 'sizes', 'width', 'height'):
+            tag = re.sub(r'\s+' + attr + r'="[^"]*"', '', tag)
+        if name == 'hero':
+            # The generated runtime applies <img> attributes sequentially. A
+            # responsive hero therefore starts both `src` and the selected
+            # `srcset` candidate, doubling the critical image request. Keep the
+            # single 90K hero and use responsive candidates on lazy images.
+            enriched_src = (
+                f'src="assets/photos/{name}.webp" '
+                f'width="{natural_width}" height="{natural_height}"'
+            )
+        else:
+            candidates = [
+                f'assets/photos/{name}-{width}.webp {width}w'
+                for width in RESPONSIVE_WIDTHS if width < natural_width
+            ]
+            candidates.append(f'assets/photos/{name}.webp {natural_width}w')
+            sizes = (
+                '(max-width: 760px) calc(100vw - 40px), '
+                '(max-width: 900px) calc(100vw - 64px), 50vw'
+                if name == 'plank' else
+                '(max-width: 760px) calc(100vw - 42px), '
+                '(max-width: 1099px) calc(50vw - 40px), 380px'
+            )
+            enriched_src = (
+                f'srcset="{", ".join(candidates)}" sizes="{sizes}" '
+                f'width="{natural_width}" height="{natural_height}" '
+                f'src="assets/photos/{name}.webp"'
+            )
+        tag = tag.replace(f'src="assets/photos/{name}.webp"', enriched_src, 1)
+        template = template[:hits[0].start()] + tag + template[hits[0].end():]
 
     # --- fonts ---------------------------------------------------------------
     print('fonts:')
@@ -234,7 +289,10 @@ def main():
     # then they have done their job. They start the hero and font fetches during
     # the initial HTML parse, in parallel with the unpack, so the assets are warm
     # in the cache by the time the swapped-in DOM asks for them.
-    preloads = ['    <link rel="preload" as="image" href="assets/photos/hero.webp" fetchpriority="high">']
+    preloads = [
+        '    <link rel="preload" as="image" href="assets/photos/hero.webp" '
+        'fetchpriority="high">'
+    ]
     for filename in FONT_BY_UUID.values():
         preloads.append(f'    <link rel="preload" as="font" type="font/woff2" '
                         f'crossorigin href="assets/fonts/{filename}">')

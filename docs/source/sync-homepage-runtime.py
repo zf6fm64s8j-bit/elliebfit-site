@@ -26,10 +26,13 @@ def encode_for_script(value):
 def replace_once(text, old, new, label):
     old_count = text.count(old)
     new_count = text.count(new)
+    # Some additions deliberately retain the old fragment as the first line of
+    # the expanded block (for example, appending a footer link). Recognize the
+    # complete new block before treating that retained fragment as stale input.
+    if new_count == 1:
+        return text, False
     if old_count == 1 and new_count == 0:
         return text.replace(old, new), True
-    if old_count == 0 and new_count == 1:
-        return text, False
     die(f'{label}: expected one old or one new block; found old={old_count}, new={new_count}')
 
 
@@ -47,6 +50,42 @@ def main():
             '10:00 a.m. Arizona time · 12:00 p.m. Central time',
             '10:00 a.m. Arizona time · <span data-central-class-time>'
             '11:00 a.m. CST / 12:00 p.m. CDT (Central time)</span>',
+        ),
+        (
+            'in-home service link',
+            'text-transform: uppercase;">In-home 1:1</div>',
+            'text-transform: uppercase;"><a href="in-home-personal-training/" '
+            'style="color: inherit; text-decoration: none;">In-home 1:1</a></div>',
+        ),
+        (
+            'semi-private service link',
+            'text-transform: uppercase;">Semi-private</div>',
+            'text-transform: uppercase;"><a href="semi-private-personal-training/" '
+            'style="color: inherit; text-decoration: none;">Semi-private</a></div>',
+        ),
+        (
+            'virtual service link',
+            'text-transform: uppercase;">Virtual</div>',
+            'text-transform: uppercase;"><a href="virtual-personal-training/" '
+            'style="color: inherit; text-decoration: none;">Virtual</a></div>',
+        ),
+        (
+            'Friday class signup link',
+            'href="mailto:ellen@elliebfit.com?subject=Friday%20free%20class&amp;body=Hi%20Ellen%2C%0A%0AI%27d%20like%20to%20join%20the%20free%20Friday%20class%20%2810%3A00%20a.m.%20Arizona%20time%29.%20Please%20send%20me%20the%20link.%0A%0AName%3A%0A" '
+            'style="background:',
+            'href="free-class-sign-up/" style="background:',
+        ),
+        (
+            'service area footer link',
+            '<a href="pwr-moves/" style="color: oklch(0.40 0.04 168);">PWR!Moves®</a>',
+            '<a href="pwr-moves/" style="color: oklch(0.40 0.04 168);">PWR!Moves®</a>\n'
+            '        <a href="service-areas/" style="color: oklch(0.40 0.04 168);">Service areas</a>',
+        ),
+        (
+            'privacy footer link',
+            '<a href="https://www.facebook.com/elliebfit/" style="color: oklch(0.40 0.04 168);">Facebook</a>',
+            '<a href="https://www.facebook.com/elliebfit/" style="color: oklch(0.40 0.04 168);">Facebook</a>\n'
+            '        <a href="privacy/" style="color: oklch(0.40 0.04 168);">Privacy</a>',
         ),
         (
             'interest group',
