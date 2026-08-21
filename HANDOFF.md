@@ -1,18 +1,18 @@
 ---
 schema: session-handoff/1
-updated: 2026-08-21T04:05:29Z
+updated: 2026-08-21T17:00:36Z
 host: codex
 scope: .
 vcs: git
 branch: main
-head: 254e4881bf8673a82d7a1a1c4def82b9e3f67115
+head: e0337b8eb717d2d9d86bacf6ad04ff15b0f9222c
 worktree:
   staged: 0
   unstaged: 0
   untracked: 0
 status: active
 verification: pass
-next_action: "Verify a Google Search Console domain property, submit sitemap.xml, and request/inspect indexing for the eight canonical URLs. Obtain an original oatmeal photo before adding Recipe image markup. GA4 Realtime and email-header confirmations remain manual checks."
+next_action: "In the Search Console URL-prefix property for https://www.elliebfit.com/, click Verify, submit sitemap.xml, and request/inspect indexing for the eight canonical URLs. A separate domain property would still require DNS TXT verification."
 ---
 
 # Handoff — Above & Beyond Fitness website (elliebfit.com)
@@ -93,14 +93,22 @@ This session landed:
     variants with `srcset`, `sizes`, and explicit dimensions. Social previews use a purpose-sized
     1200x630 JPEG instead of the 920 KB source PNG. `docs/source/optimize-bundle.py` owns the image
     variants and `docs/source/sync-homepage-runtime.py` owns the generated-runtime edits.
+17. **Search Console URL-prefix verification.** The Google-supplied
+    `google36fa4f5bebef5fcb.html` file is deployed at the canonical site root and returns the exact
+    verification token. It is deliberately excluded from `sitemap.xml`: verification files prove
+    ownership but are not indexable site content. This file verifies the `https://www` URL-prefix
+    property; a domain property covering all protocols and subdomains would still require DNS TXT.
 
 ## Next action
 
-The highest-value remaining SEO work is operational, not another site rewrite: verify a Google
-Search Console domain property, submit `https://www.elliebfit.com/sitemap.xml`, and request/inspect
-indexing for all eight canonical URLs. Also obtain an original photo of the published oatmeal
-recipe before adding a visible recipe image and `Recipe.image`; do not fabricate one solely to pass
-a rich-result validator.
+In the Search Console property for `https://www.elliebfit.com/`, click **Verify** now that
+`https://www.elliebfit.com/google36fa4f5bebef5fcb.html` is live. Then submit
+`https://www.elliebfit.com/sitemap.xml` and request/inspect indexing for all eight canonical URLs.
+The HTML-file method verifies this URL-prefix property, not a domain property; add Google's DNS TXT
+record separately only if the broader domain property is desired.
+
+Also obtain an original photo of the published oatmeal recipe before adding a visible recipe image
+and `Recipe.image`; do not fabricate one solely to pass a rich-result validator.
 
 Three nonblocking confirmations remain. **GA4:** load the site from a device off the NextDNS
 resolver (a phone on cellular) and check Realtime. **Email:** send one message from
@@ -111,8 +119,8 @@ remain deliberately deferred.
 
 ## Verification
 
-Historical rows are retained below. The final six rows document the 2026-08-21 SEO release and were
-run against both the local candidate and the deployed canonical origin.
+Historical rows are retained below. The latest rows document the 2026-08-21 SEO release and Search
+Console ownership-file deployment against both local candidates and the canonical origin.
 
 | Check | Command | Result |
 |---|---|---|
@@ -165,6 +173,7 @@ run against both the local candidate and the deployed canonical origin.
 | Mobile candidate | Lighthouse on homepage and `/in-home-personal-training/` | pass — homepage 90 Performance/100 SEO; service page 100 Performance/100 SEO/100 Accessibility; no clipping in rendered screenshots |
 | Pages deployment | Actions run `32445556018`, commit `254e488` | pass — build, status reporting, and deploy jobs all succeeded |
 | Live release | canonical redirect, 12 URLs, exact sitemap diff, homepage marker checks, mobile Lighthouse | pass — apex 301s to `www`; all URLs 200; metadata/links/srcset present; 91 Performance/100 SEO/91 Accessibility, FCP 1.4 s, LCP 3.2 s, TBT 10 ms, CLS 0 |
+| Search Console verification file | local `http.server`; Actions run `32505806796`; live `curl` on `www` and apex | pass — exact token served as `text/html` with HTTP 200 on `www`; apex 301s to the same path; SEO contract remains 19 pages/8 canonicals/8 sitemap URLs |
 
 ## Blockers & risks
 
@@ -283,7 +292,7 @@ run against both the local candidate and the deployed canonical origin.
 | T-20260816-0z | P2 | open | Label PAR-Q radio groups with `aria-labelledby` so the question is announced with the options | Screen reader reads the question before Yes/No | 2026-08-16 |
 | T-20260816-j9 | P3 | open | Add a skip-to-content link and a `prefers-reduced-motion` guard on the smooth scrolls | Both present on every page | 2026-08-16 |
 | T-20260816-v5 | P3 | open | Decide whether to restore the 5 testimonials trimmed from the old site, and the dropped bio detail | User has decided either way | 2026-08-16 |
-| T-20260821-8v | P1 | open | Verify the Search Console domain property, submit `sitemap.xml`, and inspect/request indexing for all eight canonical URLs | All eight URLs are discovered and indexed or have a documented Google-specific reason | 2026-08-21 |
+| T-20260821-8v | P1 | open | Click Verify for the `https://www.elliebfit.com/` URL-prefix property, submit `sitemap.xml`, and inspect/request indexing for all eight canonical URLs; the HTML file is already live | URL-prefix ownership is accepted and all eight URLs are discovered and indexed or have a documented Google-specific reason | 2026-08-21 |
 | T-20260821-g8 | P2 | open | Obtain an original oatmeal photo and add it visibly plus valid `Recipe.image` variants | Recipe page includes the authentic image and passes the applicable rich-result image requirement | 2026-08-21 |
 
 ## Open questions
