@@ -179,13 +179,6 @@
     var MAILTO = 'ellen@elliebfit.com';
     var sending = false;
 
-    function closestButton(node) {
-      for (var i = 0; node && i < 6; node = node.parentElement, i++) {
-        if (node.tagName === 'BUTTON') return node;
-      }
-      return null;
-    }
-
     function fields() {
       return {
         name: document.getElementById('abf-name'),
@@ -257,10 +250,12 @@
     }, true);
 
     window.addEventListener('click', function (e) {
-      var btn = closestButton(e.target);
+      // The send button carries its own hook, so resolve straight to it rather
+      // than hunting for a BUTTON ancestor and then testing what it is.
+      var btn = e.target && e.target.closest
+        ? e.target.closest('[data-abf-action="send-request"]')
+        : null;
       if (!btn) return;
-
-      if (btn.getAttribute('data-abf-action') !== 'send-request') return;
 
       // This click is ours. The bundle wires this button to its own React
       // onClick, which sets window.location.href to a mailto: -- so unless the
@@ -287,6 +282,9 @@
       }
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(payload.email)) {
         flash(btn, 'That email address looks incomplete — please check it.', 'error');
+        // Counted separately from a blank field: a run of these means the hint
+        // text needs work, which is a different fix from people skipping it.
+        if (window.gtag) window.gtag('event', 'consult_error', { reason: 'email_format' });
         return;
       }
       if (!payload.message) payload.message = '(not specified)';

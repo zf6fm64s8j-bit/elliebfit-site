@@ -5,7 +5,7 @@ host: codex
 scope: .
 vcs: git
 branch: main
-head: ffc8b915a8e0eec00fe695dca6c3898b7375cb11
+head: d8eec8088c35048e2e2ba104f9209d45b2a5795b
 worktree:
   staged: 0
   unstaged: 0
@@ -385,7 +385,7 @@ the four events.
 | Event | Fired from | Parameters |
 |---|---|---|
 | `consult_submit` | `index.html` inline handler | none |
-| `consult_error` | `index.html` inline handler | `reason: validation \| transport` |
+| `consult_error` | `index.html` inline handler | `reason: validation \| email_format \| transport` |
 | `form_submit` | `assets/forms.js` | `form_name` (fixed label) |
 | `pdf_open` | `assets/analytics.js` | `file_name` |
 

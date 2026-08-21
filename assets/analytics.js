@@ -63,7 +63,7 @@
 /* Events emitted elsewhere, all parameter-free or enum-only:
  *
  *   consult_submit   index.html inline handler   the consult request sent
- *   consult_error    index.html inline handler   { reason: 'validation' | 'transport' }
+ *   consult_error    index.html inline handler   { reason: 'validation' | 'email_format' | 'transport' }
  *   form_submit      assets/forms.js             { form_name: <fixed label> }
  *   pdf_open         here                        { file_name }
  */
