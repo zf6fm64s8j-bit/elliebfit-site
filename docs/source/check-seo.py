@@ -73,6 +73,31 @@ def meta_content(page, key, value):
     return [tag.get('content', '') for tag in page.meta if tag.get(key) == value]
 
 
+def is_redirect_stub(page):
+    """A legacy URL kept alive only to hand visitors to its replacement.
+
+    These carry a meta refresh and a canonical pointing at the new location.
+    They deliberately have no description, H1, or social card, so they must be
+    exempt from the indexable-page contract -- but they must NOT carry
+    "noindex", which would tell Google to drop the URL instead of following the
+    redirect and passing its accumulated signals to the target.
+    """
+    return bool(meta_content(page, 'http-equiv', 'refresh'))
+
+
+def is_indexable(page):
+    robots = ' '.join(meta_content(page, 'name', 'robots')).lower()
+    return 'noindex' not in robots and not is_redirect_stub(page)
+
+
+def refresh_target(page):
+    for value in meta_content(page, 'http-equiv', 'refresh'):
+        _, _, url = value.partition('url=')
+        if url:
+            return url.strip()
+    return ''
+
+
 def local_path_for(url):
     parsed = urlparse(url)
     if parsed.netloc and parsed.netloc != 'www.elliebfit.com':
@@ -98,9 +123,7 @@ def main():
         page = parse_page(path)
         pages[rel] = page
 
-        robots = ' '.join(meta_content(page, 'name', 'robots')).lower()
-        indexable = 'noindex' not in robots
-        if not indexable:
+        if not is_indexable(page):
             continue
 
         title = ''.join(page.title_parts).strip()
@@ -133,12 +156,12 @@ def main():
     indexable_canonicals = {
         page.canonicals[0]
         for page in pages.values()
-        if page.canonicals and 'noindex' not in ' '.join(meta_content(page, 'name', 'robots')).lower()
+        if page.canonicals and is_indexable(page)
     }
     indexable_titles = [
         ''.join(page.title_parts).strip()
         for page in pages.values()
-        if page.canonicals and 'noindex' not in ' '.join(meta_content(page, 'name', 'robots')).lower()
+        if page.canonicals and is_indexable(page)
     ]
     if len(indexable_titles) != len(set(indexable_titles)):
         failures.append('indexable pages: duplicate titles')
@@ -149,6 +172,26 @@ def main():
             failures.append('sitemap.xml: missing ' + ', '.join(missing))
         if extra:
             failures.append('sitemap.xml: contains non-indexable or unknown ' + ', '.join(extra))
+
+    stubs = 0
+    for rel, page in sorted(pages.items()):
+        if not is_redirect_stub(page):
+            continue
+        stubs += 1
+        page_url = ORIGIN if rel == 'index.html' else urljoin(ORIGIN, rel[:-len('index.html')])
+        robots = ' '.join(meta_content(page, 'name', 'robots')).lower()
+        if 'noindex' in robots:
+            failures.append(f'{rel}: redirect stub must not carry noindex; it '
+                            'blocks the redirect from passing signals to its target')
+        if len(page.canonicals) != 1 or not page.canonicals[0].startswith(ORIGIN):
+            failures.append(f'{rel}: redirect stub needs one canonical on {ORIGIN}')
+            continue
+        target = urljoin(page_url, refresh_target(page))
+        if target != page.canonicals[0]:
+            failures.append(f'{rel}: redirect stub sends visitors to {target} '
+                            f'but canonicalizes to {page.canonicals[0]}')
+        if page.canonicals[0] == page_url:
+            failures.append(f'{rel}: redirect stub canonicalizes to itself')
 
     for rel, page in pages.items():
         page_url = ORIGIN if rel == 'index.html' else urljoin(ORIGIN, rel[:-len('index.html')])
@@ -164,7 +207,7 @@ def main():
         print('\n'.join(f'FAIL {failure}' for failure in failures))
         return 1
     print(f'PASS {len(pages)} HTML pages; {len(indexable_canonicals)} indexable canonicals; '
-          f'{len(sitemap_urls)} sitemap URLs')
+          f'{len(sitemap_urls)} sitemap URLs; {stubs} redirect stubs')
     return 0
 
 
