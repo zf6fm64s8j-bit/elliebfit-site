@@ -3,7 +3,8 @@
 ## 1. Scope & Ownership
 
 This repository contains the static marketing website for Ellie B Fit personal training, deployed directly via GitHub Pages. The driving AI assistant (**Codex**, **Antigravity**, or **Claude Code**) owns implementation, local deterministic verification, and delivery.
-Operational posture: **Tier 1 (Light Rigor)** per [ADR 0004](../../docs/adr/0004-lightweight-ergonomics-and-ceremony-reduction-for-personal-projects.md).
+Operational posture: **Tier 1 (Light Rigor)** (builder-first solo development; direct commits to `main` authorized once verification passes; PRs and review councils reserved for high-consequence gates per ADR 0004).
+- **Environment & Runtime:** Static HTML/CSS/JS, Python >=3.10 (site validator)
 
 ## 2. Verification & Delivery
 
