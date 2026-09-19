@@ -5,6 +5,12 @@ Validate markup, links, forms, mobile layout, and accessibility before publicati
 Pages deploys, verify the rendered production URL rather than treating deployment success as visual
 readback.
 
+```bash
+python3 scripts/validate-site.py
+```
+
+GitHub Actions runs this deterministic local validation separately from the Pages deployment.
+
 - **Homepage** — `index.html`, a bundled artifact (~180 KB) whose styles, scripts and template are
   inlined. Photos and fonts are **not** inlined: they load from `assets/photos/` and `assets/fonts/`
   so they cache, download in parallel, and lazy-load. GA4 is the only third-party page-view script;
