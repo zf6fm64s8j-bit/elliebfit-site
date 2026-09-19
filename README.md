@@ -1,6 +1,9 @@
 # Above & Beyond Fitness — website
 
 Static site for elliebfit.com, hosted on GitHub Pages. No build step: edit, commit, push.
+Validate markup, links, forms, mobile layout, and accessibility before publication; after GitHub
+Pages deploys, verify the rendered production URL rather than treating deployment success as visual
+readback.
 
 - **Homepage** — `index.html`, a bundled artifact (~180 KB) whose styles, scripts and template are
   inlined. Photos and fonts are **not** inlined: they load from `assets/photos/` and `assets/fonts/`
