@@ -1,28 +1,24 @@
-# Ellie B Fit Site — Repository Instructions
+# Ellie B Fit Site — agent notes
 
-## 1. Scope & Ownership
+The workspace rules in `~/AI_projects/AGENTS.md` load automatically and cover workflow, council tools,
+and safety. This file holds only what is specific to this repository.
 
-This repository contains the static marketing website for Ellie B Fit personal training, deployed directly via GitHub Pages. The driving AI assistant (**Codex**, **Antigravity**, or **Claude Code**) owns implementation, local deterministic verification, and delivery.
-Operational posture: **Tier 1 (Light Rigor)** (builder-first solo development; direct commits to `main` authorized once verification passes; PRs and review councils reserved for high-consequence gates per ADR 0004).
-- **Environment & Runtime:** Static HTML/CSS/JS, Python >=3.10 (site validator)
+- **Purpose:** static marketing site for Ellie B Fit personal training.
+- **Stack:** static HTML/CSS/JS; Python >= 3.10 for the site validator.
+- **Verify:** `./scripts/verify.sh` (HTML integrity of every page via `scripts/validate-site.py`).
+- **Consequence level:** deploys to GitHub Pages from `main`. A green Pages build is not a rendered-browser
+  check; report the two separately.
 
-## 2. Verification & Delivery
+## Domain traps
 
-- **Local Check:** Run `./scripts/verify.sh` before committing (validates HTML integrity and all pages via `scripts/validate-site.py`).
-- **Solo Delivery:** Direct commits to `main` are authorized once `./scripts/verify.sh` passes and `git status` is clean (Scope → Change → Check).
-- **Live Site Readback:** Treat a successful GitHub Pages build separately from rendered browser verification.
+Ask for a second opinion (`ask-peer`) before changing:
 
-## 3. Boundaries & Safety Rules
+- mobile viewport layout shifts and responsive grid/flex behaviour;
+- WCAG accessibility (contrast, ARIA landmarks, tap targets);
+- client-side form validation and anti-spam submission handling.
 
-- Preserve hand-edited HTML structure; never overwrite pages with automated tool exports.
-- Keep private client training inquiries, leads, and Formspree secrets outside Git.
-- Preserve existing redirect rules, analytics consent boundaries, and embedded JSON-LD schemas.
+## Repository rules
 
-## 4. Second Opinions (`ask-peer`) & Scaling
-
-- **Routine work:** Do not invoke peers for text copy edits, minor CSS tweaks, or image path adjustments.
-- **Two-Failure Rule:** If `./scripts/verify.sh` fails twice consecutively, run `ask-peer --fast "<failing error>"`.
-- **Domain Traps:** Query `ask-peer` before finalizing changes to:
-  - Mobile viewport layout shifts and responsive CSS grid/flex bugs.
-  - WCAG accessibility standards (contrast ratios, aria landmarks, tap targets).
-  - Client-side form validation and anti-spam submission handling.
+- Pages are hand-edited HTML; never overwrite them with tool exports.
+- Keep client inquiries, leads, and Formspree secrets outside Git.
+- Preserve redirect rules, analytics consent boundaries, and embedded JSON-LD.
