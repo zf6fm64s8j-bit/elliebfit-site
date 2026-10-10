@@ -201,86 +201,42 @@ Console ownership-file deployment against both local candidates and the canonica
 
 ## Do not repeat
 
-- **Posting to Google Forms' `/formResponse` endpoint** — rejected: Google now returns HTTP 400 to
-  all third-party posts. Every variant was tried (browser headers, cookies, referer, `fbzx`, GET
-  form, empty body). Submissions were silently lost for a period because the page showed success
-  on an opaque iframe navigation. Replaced by the Apps Script receiver.
-- **`DocumentApp` in the Apps Script** — rejected: the target is a Spreadsheet, so it throws
-  "Document is missing". Uses `SpreadsheetApp`, one tab per form.
-- **Matching bundle card blocks by their shared inline style** — rejected: the step cards carry the
-  same style, so a non-greedy match swallowed neighbouring sections and scrambled the DOM. Anchor
-  regexes on card *titles* instead.
-- **Root-absolute paths (`/assets/...`) on sub-pages** — rejected: correct on the custom domain but
-  they resolve to the domain root on the project-pages preview URL, so the stylesheet 404s. All
-  sub-pages use relative paths. `404.html` is the deliberate exception (it is served for arbitrary
-  paths, so relative links there would resolve against the missing URL).
-- **Putting `<link>` tags only in the static `<head>` of `index.html`** — rejected: the bundle
-  replaces the whole document on hydration and discards them. Icons live in the template `<helmet>`.
-- **The Indigo & Peach "Halo Trail Badge" design guide** — rejected by the user; it is a different
-  identity from the one the site follows. The canonical guide is *Desert coral & sage*, mirrored at
-  `docs/brand/`.
-- **White/cream text on a coral fill** — rejected: 2.92:1, fails AA at any size. Button labels are
-  Ink on coral (4.69:1).
-- **Trusting a form's success state as proof of delivery** — rejected: a cross-origin iframe
-  navigation looks identical whether the server accepted or rejected. Only assert delivery when the
-  response body can actually be read.
-- **A `<picture>` element for WebP/JPEG fallback on the homepage photos** — rejected: all five
-  `<img>` tags live inside the `<x-dc>` template the DC runtime compiles, and changing their
-  structure risks the compiler. WebP alone is Baseline (Safari 14, 2020); plain `<img>` stays.
-- **A negative `bottom` on the waiver PDF's running footer** — rejected: Chrome clips `position:
-  fixed` content that falls outside the page's content box, so the footer silently disappeared from
-  every page. It must sit at `bottom: 0`, with the `@page` bottom margin enlarged to keep flowed
-  content clear of it.
-- **Leaving anything the page needs at runtime in the static document** — rejected: the runtime ends
-  with `document.documentElement.replaceWith()`, which discards the original document wholesale. The
-  full SEO head lived there and was gone from the rendered DOM — no `<title>` element at all, 2 meta
-  tags, no JSON-LD, no `lang`. Only the template's `<helmet>` survives; `docs/source/sync-head-meta.py`
-  mirrors the static head into it. Raw fetches were always fine, which is why this hid for so long.
-- **Assuming the homepage inherits `assets/site.css`'s resets** — rejected: it does not load site.css
-  at all. `min-height` on a padded element therefore added to the padding and took the header from
-  70 px to 97 px. Set `box-sizing` explicitly in any rule added to `abf-responsive`.
-- **A bare `required` attribute on the bundle's inputs** — rejected: it does not survive the
-  template's React compile, and no `<form>` wraps the fields to enforce it. Use `aria-required`;
-  the inline handler already does the validation.
-- **`Image.blend` for stacked translucent shapes** — rejected: it mixes the *whole* canvas, not the
-  shape being drawn, so each chevron of the Ascent mark washed out the ones painted before it and
-  the icons came out visibly pale. Composite per shape with `Image.alpha_composite` instead.
-- **Trusting the Pages build API's `status` field during a GitHub incident** — it sat on `building`
-  with `created_at == updated_at` while the underlying Actions run had already failed on a 503.
-  Check `gh run list` and `gh run view --log-failed`; the Actions rerun endpoint can 503 too, but
-  `git push` still works and enqueues a fresh run.
-- **Verifying analytics from this machine or network** — rejected: the resolver is NextDNS
-  (`45.90.28.101`), which sinkholes `googletagmanager.com` and `google-analytics.com` to `0.0.0.0`.
-  `gtag.js` is requested but never executes, `google_tag_manager` stays undefined, and `curl`
-  returns `http=000` — all of which look exactly like a broken tag and are not. Confirm GA4 from a
-  device off that resolver, e.g. a phone on cellular, then read Realtime.
-- **Assuming a script referenced from `<helmet>` runs once** — rejected: the homepage evaluated
-  `assets/analytics.js` **twice** from a single fetch and a single surviving `<script>` tag, because
-  the runtime both re-creates scripts to make them execute and hoists the helmet into `<head>`. It
-  sent two `page_view` hits and would have doubled every traffic figure. Anything loaded from the
-  helmet with a side effect needs its own `window`-level idempotence guard.
-- **Intercepting the bundle's buttons without stopping the event** — rejected: the consult form's
-  Send button is wired to the bundle's own React `onClick`, which sets `window.location.href` to a
-  `mailto:`. The Formspree handler in the first inline `<script>` listens at *window capture*, which
-  runs first but does not by itself prevent React's handler — so both fired and the visitor's mail
-  client opened on top of a successful send. Any handler that takes over a bundle control must call
-  `e.preventDefault()` **and** `e.stopImmediatePropagation()`, and must do it before every early
-  return, not only the success path.
-- **Tracking the interest chips from click events alone** — rejected: they are multi-select and the
-  build pre-selects "In-home", so a visitor who never touches them produces no click and was
-  reported as "Not specified". Read the chips' selected state off the DOM at send time.
-- **Timing the bundle's paint in the Browser pane** — rejected as a measurement: the pane reports
-  `visibilityState: hidden`, which defers paint and clamps `setInterval` to ~1 s, so FCP/LCP and any
-  polling-based A/B are meaningless there. Measure the synchronous unpack cost instead, and read
-  layout back from the DOM rather than from screenshots of scrolled content.
-- **Adding `srcset` to the generated homepage hero** — rejected: the runtime assigns image
-  attributes sequentially after the browser has already seen `src`, so adding hero `srcset`
-  triggers a second hero download. Keep the 90 KB hero single-source until the generated runtime
-  is replaced. Responsive sources are safe on the lazy, below-fold photos.
-- **Trusting direct headless-Chrome mobile screenshots for this homepage** — rejected: the local
-  Retina/window-size path reproduced the known cropped-viewport anomaly. Use Lighthouse's mobile
-  emulation screenshot plus DOM measurements; the final Lighthouse captures showed the existing
-  homepage and the new service template wrapping correctly.
+- **Form delivery** — Google Forms' `/formResponse` returns 400 to every third-party post (all variants
+  were tried) and lost submissions behind an opaque-iframe "success", so the Apps Script receiver replaced
+  it. Assert delivery only when the response body is readable. The target is a Spreadsheet: use
+  `SpreadsheetApp` (one tab per form), not `DocumentApp`.
+- **The runtime replaces the document** — `document.documentElement.replaceWith()` discards the static
+  document, so anything needed at runtime (SEO head, icon `<link>`s) lives in the template `<helmet>`
+  (`docs/source/sync-head-meta.py` mirrors the head). Helmet scripts can execute twice (analytics sent two
+  `page_view`s), so side-effecting scripts need a `window`-level idempotence guard.
+- **Bundle controls** — A bare `required` doesn't survive the React compile (use `aria-required`; the
+  handler validates). A handler that takes over a bundle button must call `preventDefault()` **and**
+  `stopImmediatePropagation()` before every early return, or React's `mailto:` fires too. The multi-select
+  interest chips are pre-selected, so read their state from the DOM at send time, not from clicks.
+- **Editing the bundle by regex** — Card blocks share an inline style with the step cards; anchor regexes
+  on card titles, or a non-greedy match scrambles neighbouring sections.
+- **Sub-page paths** — Root-absolute `/assets/...` 404s on the project-pages preview URL; sub-pages use
+  relative paths, except `404.html`, which needs absolute ones because it serves arbitrary paths.
+- **Brand** — The canonical guide is *Desert coral & sage* (`docs/brand/`); the Indigo & Peach "Halo Trail
+  Badge" guide was rejected. White or cream text on coral is 2.92:1 and fails AA; button labels are Ink on
+  coral (4.69:1).
+- **Homepage CSS** — The homepage doesn't load `assets/site.css`, so set `box-sizing` explicitly in any
+  `abf-responsive` rule (`min-height` plus padding took the header from 70 to 97 px).
+- **Homepage images** — Don't restructure the five `<img>` tags in the `<x-dc>` template (no `<picture>`;
+  WebP alone is Baseline). Don't add `srcset` to the hero: the runtime assigns it after `src` and
+  triggers a second download. Below-fold lazy photos can take responsive sources.
+- **Waiver PDF footer** — Chrome clips `position: fixed` content outside the content box; keep the footer at
+  `bottom: 0` and enlarge the `@page` bottom margin.
+- **Icon compositing** — `Image.blend` mixes the whole canvas and washed out the Ascent-mark chevrons;
+  composite each shape with `Image.alpha_composite`.
+- **Pages deploys during a GitHub incident** — The Pages build API's `status` can sit on `building` after the
+  Actions run has failed; check `gh run list` / `gh run view --log-failed`. A `git push` still enqueues a
+  fresh run when the rerun endpoint 503s.
+- **Verifying analytics** — This network's NextDNS resolver sinkholes Google's tag domains, which looks
+  exactly like a broken tag. Confirm GA4 from a device off that resolver (phone on cellular) via Realtime.
+- **Measuring the homepage** — The Browser pane reports `visibilityState: hidden`, which defers paint and
+  clamps timers, so FCP/LCP there are meaningless; measure the synchronous unpack and read layout from the
+  DOM. For mobile screenshots, use Lighthouse's emulation, not direct headless Chrome (it crops the viewport).
 
 ## Outstanding tasks
 
