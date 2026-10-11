@@ -2,12 +2,18 @@ name: Validate
 
 on:
   pull_request:
+    paths-ignore: ['**/*.md']
   push:
+    paths-ignore: ['**/*.md']
     branches:
       - main
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   site:
