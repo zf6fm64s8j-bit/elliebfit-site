@@ -1,11 +1,11 @@
 ---
 schema: session-handoff/1
-updated: 2026-10-10T23:08:28Z
-host: codex
+updated: 2026-10-23T15:08:00Z
+host: gemini
 scope: .
 vcs: git
 branch: main
-head: b58ae804c04c0bb0d4fae1f3b312011f668efdf4
+head: 3bfcfcd1a2f1f714df1778a9ea8344c217cb1bfd
 worktree:
   staged: 0
   unstaged: 0
@@ -100,6 +100,14 @@ This session landed:
     verification token. It is deliberately excluded from `sitemap.xml`: verification files prove
     ownership but are not indexable site content. This file verifies the `https://www` URL-prefix
     property; a domain property covering all protocols and subdomains would still require DNS TXT.
+18. **AI search readability and consumption.** Converted `/about-me/`, `/rates/`, and
+    `/testimonials/` from redirect stubs into full static pages sharing `assets/site.css`, complete with
+    breadcrumbs, Open Graph, and JSON-LD (`ProfilePage` and `WebPage`). Enriched the `<noscript>`
+    fallback in `index.html` with all 8 client testimonials and 5 FAQ questions. Repaired stripped `$`
+    pricing numbers in FAQPage JSON-LD and synced to the template helmet. Added `alternateName`
+    (`Ellie B Fit`), `knowsAbout`, and certified PWR!Moves instructor credentials. Added `/llms.txt`.
+    Added AI-readability, nojs parity, and FAQ format checks to `docs/source/check-seo.py`, wired into
+    `scripts/verify.sh` and CI.
 
 ## Next action
 
@@ -178,6 +186,9 @@ Console ownership-file deployment against both local candidates and the canonica
 | Pages deployment | Actions run `32445556018`, commit `254e488` | pass — build, status reporting, and deploy jobs all succeeded |
 | Live release | canonical redirect, 12 URLs, exact sitemap diff, homepage marker checks, mobile Lighthouse | pass — apex 301s to `www`; all URLs 200; metadata/links/srcset present; 91 Performance/100 SEO/91 Accessibility, FCP 1.4 s, LCP 3.2 s, TBT 10 ms, CLS 0 |
 | Search Console verification file | local `http.server`; Actions run `32505806796`; live `curl` on `www` and apex | pass — exact token served as `text/html` with HTTP 200 on `www`; apex 301s to the same path; SEO contract remains 19 pages/8 canonicals/8 sitemap URLs |
+| AI readability & SEO | `python3 docs/source/check-seo.py` | pass — 21 HTML pages, 11 indexable canonicals, 11 sitemap URLs, 4 redirect stubs; nojs testimonials and FAQ verified; llms.txt verified |
+| AI corruption test | injected missing-`$` FAQ string into temp tree | pass — check-seo.py fails closed with exit code 1 |
+| Rendered browser probe | Headless Chrome DOM & screenshot inspection | pass — homepage bundle unpacks cleanly, `#about/#rates/#testimonials` survive, desktop & mobile render with 0 horizontal overflow |
 
 ## Blockers & risks
 
@@ -237,6 +248,12 @@ Console ownership-file deployment against both local candidates and the canonica
 - **Measuring the homepage** — The Browser pane reports `visibilityState: hidden`, which defers paint and
   clamps timers, so FCP/LCP there are meaningless; measure the synchronous unpack and read layout from the
   DOM. For mobile screenshots, use Lighthouse's emulation, not direct headless Chrome (it crops the viewport).
+- **FAQ JSON-LD formatting** — Escaping or template substitution once stripped all `$` signs from the rates
+  answer ("sessions are  per hour"). `check-seo.py` now enforces that rates FAQ text contains `$90` and rejects
+  corrupted pricing.
+- **AI crawlers parse raw HTML** — Crawlers like GPTBot, ClaudeBot, and PerplexityBot do not execute
+  client-side JS bundles. Critical signals (testimonials, package tables, FAQ answers, credential details) must
+  exist in the `<noscript>` fallback and on static dedicated subpages.
 
 ## Outstanding tasks
 

@@ -111,6 +111,64 @@ def local_path_for(url):
     return candidate
 
 
+def check_ai_readability(indexable_canonicals):
+    """Guard what JavaScript-less AI crawlers see.
+
+    GPTBot, ClaudeBot and PerplexityBot do not run the homepage bundle, so they
+    read only the static head and the <noscript> fallback. Keep the FAQ JSON-LD
+    free of the stripped-`$` corruption that once shipped ("sessions are  per
+    hour"), keep its questions and the testimonials visible in the fallback,
+    and keep /llms.txt pointing only at indexable pages.
+    """
+    import html as html_lib
+    import re
+
+    failures = []
+    with open(os.path.join(ROOT, 'index.html'), encoding='utf-8') as handle:
+        source = handle.read()
+    head = source[:source.find('</head>')]
+    match = re.search(r'<script type="application/ld\+json">(.*?)</script>', head, re.S)
+    questions = []
+    if match:
+        graph = json.loads(match.group(1)).get('@graph', [])
+        for node in graph:
+            if node.get('@type') != 'FAQPage':
+                continue
+            for item in node.get('mainEntity', []):
+                answer = item['acceptedAnswer']['text']
+                questions.append(item['name'].strip())
+                if '  ' in answer or ' ,' in answer or ('per hour' in answer and '$' not in answer):
+                    failures.append(f'index.html: FAQ answer looks corrupted: {item["name"].strip()}')
+    start = source.find('<div class="nojs">')
+    end = source.find('</noscript>', start)
+    if start < 0 or end < 0:
+        failures.append('index.html: missing <noscript> nojs fallback')
+    else:
+        fallback = html_lib.unescape(source[start:end])
+        for required in ('Clients in their words', 'Common questions', '$1,640'):
+            if required not in fallback:
+                failures.append(f'index.html: nojs fallback lacks "{required}"')
+        for question in questions:
+            if question not in fallback:
+                failures.append(f'index.html: nojs fallback lacks FAQ question "{question}"')
+
+    llms_path = os.path.join(ROOT, 'llms.txt')
+    if not os.path.exists(llms_path):
+        failures.append('llms.txt: missing')
+        return failures
+    with open(llms_path, encoding='utf-8') as handle:
+        llms = handle.read()
+    lines = llms.splitlines()
+    if not lines or not lines[0].startswith('# '):
+        failures.append('llms.txt: first line must be an H1')
+    if not any(line.startswith('> ') for line in lines):
+        failures.append('llms.txt: missing blockquote summary')
+    for url in re.findall(r'\]\((https?://[^)\s]+)\)', llms):
+        if url not in indexable_canonicals:
+            failures.append(f'llms.txt: {url} is not an indexable canonical page')
+    return failures
+
+
 def main():
     failures = []
     pages = {}
@@ -202,6 +260,8 @@ def main():
             target = local_path_for(target_url)
             if target is not None and not os.path.exists(target):
                 failures.append(f'{rel}: broken internal link {href}')
+
+    failures.extend(check_ai_readability(indexable_canonicals))
 
     if failures:
         print('\n'.join(f'FAIL {failure}' for failure in failures))

@@ -24,3 +24,5 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Validate local pages, links, assets, and IDs
         run: python3 scripts/validate-site.py
+      - name: Check SEO and AI-crawler contract
+        run: python3 docs/source/check-seo.py
