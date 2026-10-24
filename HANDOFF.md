@@ -5,7 +5,7 @@ host: codex
 scope: .
 vcs: git
 branch: main
-head: 7165604
+head: d451b79
 worktree:
   staged: 0
   unstaged: 0
@@ -19,7 +19,7 @@ next_action: None (complete)
 
 ## State of play
 
-- The reviewed candidate is live at <https://www.elliebfit.com/>. Published Scottsdale wording revision `7165604`;
+- The reviewed candidate is live at <https://www.elliebfit.com/>. Published Scottsdale wording revision `d451b79`;
   [release record](docs/releases/2026-10-24.md) links successful deployment and validation runs.
 - Pages now uses Actions, preserving the custom domain and enforced HTTPS. Main pushes validate;
   only a manual `pages.yml` dispatch with publish=true publishes the allowlisted artifact.
