@@ -4,9 +4,11 @@ The workspace rules in `~/AI_projects/AGENTS.md` load automatically and cover wo
 and safety. This file holds only what is specific to this repository.
 
 - **Purpose:** static marketing site for Ellie B Fit personal training.
-- **Stack:** static HTML/CSS/JS; Python >= 3.10 for the site validator.
+- **Stack:** static HTML/CSS/JS; Python >= 3.10 for validators and allowlisted export.
 - **Verify:** `./scripts/verify.sh` (HTML integrity of every page via `scripts/validate-site.py`).
-- **Consequence level:** deploys to GitHub Pages from `main`. A green Pages build is not a rendered-browser
+- **Deployment:** Pages Actions from `main`; push validates only. After publication approval, dispatch
+  `pages.yml` with `publish=true`. Publish only `build-public-site.py` output; never repo root or review output.
+- **Consequence level:** public deployment needs council review. A green build is not a rendered-browser
   check; report the two separately.
 
 ## Domain traps

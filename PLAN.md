@@ -1,11 +1,11 @@
 ---
 schema: project-plan/2
-updated: 2026-10-24T13:59:28Z
+updated: 2026-10-24T22:56:56Z
 scope: .
 vcs: git
 branch: main
-head: 2fd7bbd3bb4428409f99770c8c4b788fb7fbb002
-phase: release
+head: 33705055cda72e4dee5d6f685b45ab6a74493457
+phase: post-release
 status: active
 rigor: light
 decision_log: docs/adr/
@@ -21,7 +21,7 @@ its ideal-client fit, practical costs and experience. Prepare changes for privat
 a working local preview, adjudicated review, and a recorded discovery baseline when access permits.
 ## Scope
 **In scope:** Existing article drafts; homepage and service-page improvements from the
-[local audit](docs/source/llm-discovery-audit-2026-10-23.md); discreet biography wording;
+retained local audit; discreet biography wording;
 private preview; follow-up checks of existing search/business accounts and measurement.
 **Out of scope:** External-account/listing changes beyond the approved Pages cutover,
 new rates/services, medical promises, invented client details, outreach, account/listing mutations,
@@ -84,14 +84,14 @@ facts, preserved quotes, PWR references, prices, no affiliation links and regene
 Run homepage generators twice and compare hashes. Inspect local desktop/narrow pages; do not submit
 real forms. Account rows require actual console evidence; public crawl checks do not complete them.
 
-LAN review: <http://10.0.1.5:8080/>. Current evidence: [cutover-review.md](cutover-review.md).
+LAN review: <http://10.0.1.5:8080/>. Current evidence: [release record](docs/releases/2026-10-24.md).
 
 ## Publication checklist
-Owner/Ellen approve the candidate; obtain explicit publication instruction. Execute the precise
-sequence in [cutover-review.md](cutover-review.md): switch legacy Pages source BEFORE pushing,
-exclude editorial records, publish only the public artifact, verify live URLs and delivery, retain rollback.
-No implementation checkbox authorizes public publication.
+Published October 24 after explicit approval. Pages Actions publishes the validated public artifact;
+live hash, 16-page, domain redirect, source-exposure and browser checks passed. Release evidence
+and validation limits are in [the release record](docs/releases/2026-10-24.md).
 
 ## Open questions
 
-Search/account access and baseline are not yet verified. Candidate content and release approval remain pending; no external-account changes are authorized.
+Discovery-account baselines and directory activation remain unverified. Publication is complete;
+no listing changes, outreach or live inquiry submissions were performed.

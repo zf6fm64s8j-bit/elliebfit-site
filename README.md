@@ -1,9 +1,8 @@
 # Above & Beyond Fitness — website
 
-Hand-edited static site for elliebfit.com. The launch candidate uses an explicit public-file
-allowlist and separate production/private-review exports. Current live Pages settings still serve
-`main` from the repository root; do not push the candidate before the approved cutover switches
-Pages to GitHub Actions. The local candidate has not been publicly published.
+Hand-edited static site for elliebfit.com, published through GitHub Pages Actions using an explicit
+public-file allowlist. Production and private-review exports share the same source. The reviewed
+site was published October 24, 2026; see [the release record](docs/releases/2026-10-24.md).
 Validate markup, links, forms, mobile layout, and accessibility before publication; after GitHub
 Pages deploys, verify the rendered production URL rather than treating deployment success as visual
 readback.
@@ -104,11 +103,16 @@ when the text changes — never regenerate it silently.
 
 ## Deploy
 
-The current live setting still serves `main` from the repo root. For the prepared candidate,
-first switch Settings → Pages → Source to **GitHub Actions**, after explicit release approval and
-before pushing candidate source. The manual `Publish allowlisted site` workflow builds only the
-allowlisted artifact; its `publish` input defaults to false. A push does not trigger this new workflow.
-The existing legacy setting must be changed at cutover; adding the workflow alone does not stop it.
+Pages is configured for **GitHub Actions**, with custom domain `www.elliebfit.com` and HTTPS enforced.
+Pushing to main runs validation but does not publish. After review and publication approval, run the
+manual workflow on main:
+
+```bash
+gh workflow run pages.yml --ref main -f publish=true
+```
+
+The workflow's `publish` input defaults to false for artifact-only runs. It builds and validates the
+allowlisted output before deployment. Do not restore legacy main-root publishing for normal releases.
 
 Build the production artifact without deploying:
 
@@ -129,7 +133,7 @@ inquiry guards and the review badge. Never publish the review export. Validators
 and the production build validates its exact output before writing the success manifest.
 
 ```bash
-gh api repos/zf6fm64s8j-bit/elliebfit-site/pages/builds/latest --jq '.status + " " + .commit'
+gh run list --workflow pages.yml --limit 3
 ```
 
 Preview locally with `python3 -m http.server 8000`.
