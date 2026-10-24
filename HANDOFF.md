@@ -29,6 +29,8 @@ next_action: None (complete)
   live. No review controls or editorial/source files are served; private review remains on Lula.
 - Post-launch [SEO audit](docs/seo-readiness-2026-10-24.md) passed after logo, guide-name and offer-link
   metadata corrections; Claude and OpenRouter passed independently. Fresh 66-file/16-page checks pass.
+- Ellen's requested Scottsdale, Arizona emphasis is restored in the homepage brand/headline and
+  main local-training titles/headings. Three-area coverage and virtual availability remain explicit.
 - Requested publication is complete. Discovery-account baselines and directory activation in PLAN.md
   remain future work; no listing edits, outreach or real inquiry/email tests were performed.
 
