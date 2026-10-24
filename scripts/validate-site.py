@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate repository-local HTML links, assets, and duplicate element IDs."""
 
+import argparse
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
@@ -52,6 +53,11 @@ def reference_target(page, reference):
 
 
 def main():
+    global ROOT
+    cli = argparse.ArgumentParser(description=__doc__)
+    cli.add_argument('--root', type=Path, default=ROOT, help='Site directory to validate')
+    args = cli.parse_args()
+    ROOT = args.root.resolve()
     failures = []
     allowlist = load_allowlist()
     pages = sorted(ROOT.rglob("*.html"))

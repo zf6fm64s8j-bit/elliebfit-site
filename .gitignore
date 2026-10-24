@@ -1,3 +1,10 @@
 .DS_Store
 __pycache__/
 *.py[cod]
+
+# Machine-local editorial/review records; public pages live at their real routes.
+docs/source/articles/
+docs/source/llm-discovery-audit-2026-10-23.md
+site-review.md
+navigation-review.md
+cutover-review.md

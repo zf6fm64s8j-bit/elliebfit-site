@@ -6,6 +6,7 @@ so a build system cannot protect SEO invariants for us. This check keeps the
 sitemap, canonical URLs, index directives, social cards, headings, JSON-LD,
 and internal links synchronized without requiring third-party packages.
 """
+import argparse
 from html.parser import HTMLParser
 import json
 import os
@@ -170,6 +171,11 @@ def check_ai_readability(indexable_canonicals):
 
 
 def main():
+    global ROOT
+    cli = argparse.ArgumentParser(description=__doc__)
+    cli.add_argument('--root', default=ROOT, help='Site directory to validate')
+    args = cli.parse_args()
+    ROOT = os.path.abspath(args.root)
     failures = []
     pages = {}
     for base, dirs, files in os.walk(ROOT):

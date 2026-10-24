@@ -11,6 +11,9 @@ python3 scripts/validate-site.py
 echo "== Checking SEO and AI-crawler contract =="
 python3 docs/source/check-seo.py
 
+echo "== Auditing navigation and draft routes =="
+python3 scripts/audit-navigation.py
+
 echo "== Checking git diff formatting =="
 git diff --check
 

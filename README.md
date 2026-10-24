@@ -1,6 +1,9 @@
 # Above & Beyond Fitness — website
 
-Static site for elliebfit.com, hosted on GitHub Pages. No build step: edit, commit, push.
+Hand-edited static site for elliebfit.com. The launch candidate uses an explicit public-file
+allowlist and separate production/private-review exports. Current live Pages settings still serve
+`main` from the repository root; do not push the candidate before the approved cutover switches
+Pages to GitHub Actions. The local candidate has not been publicly published.
 Validate markup, links, forms, mobile layout, and accessibility before publication; after GitHub
 Pages deploys, verify the rendered production URL rather than treating deployment success as visual
 readback.
@@ -101,7 +104,29 @@ when the text changes — never regenerate it silently.
 
 ## Deploy
 
-Pages is already configured to serve `main` from the repo root. Push to `main` and it redeploys.
+The current live setting still serves `main` from the repo root. For the prepared candidate,
+first switch Settings → Pages → Source to **GitHub Actions**, after explicit release approval and
+before pushing candidate source. The manual `Publish allowlisted site` workflow builds only the
+allowlisted artifact; its `publish` input defaults to false. A push does not trigger this new workflow.
+The existing legacy setting must be changed at cutover; adding the workflow alone does not stop it.
+
+Build the production artifact without deploying:
+
+```bash
+python3 scripts/build-public-site.py --output /tmp/elliebfit-public-NEW
+```
+
+Build the isolated LAN review copy from the same source:
+
+```bash
+python3 scripts/build-review-site.py --output /tmp/elliebfit-review-NEW
+```
+
+Both outputs must be new directories outside this repository. `site_inventory.py` defines the
+public boundary: pages, assets, crawl files, ownership verification and two public PDFs. Workspace
+files, editorial notes and source drafts are excluded. Only the review export adds noindex, CSP,
+inquiry guards and the review badge. Never publish the review export. Validators accept `--root`
+and the production build validates its exact output before writing the success manifest.
 
 ```bash
 gh api repos/zf6fm64s8j-bit/elliebfit-site/pages/builds/latest --jq '.status + " " + .commit'
