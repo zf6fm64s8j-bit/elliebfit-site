@@ -1,11 +1,11 @@
 ---
 schema: session-handoff/1
-updated: 2026-10-24T22:56:56Z
+updated: 2026-10-24T23:30:00Z
 host: codex
 scope: .
 vcs: git
 branch: main
-head: 33705055cda72e4dee5d6f685b45ab6a74493457
+head: 1dd986d895b607680c80423b6b804c7df82fe3e2
 worktree:
   staged: 0
   unstaged: 0
@@ -19,7 +19,7 @@ next_action: None (complete)
 
 ## State of play
 
-- The reviewed candidate is live at <https://www.elliebfit.com/>. Published revision `3370505`;
+- The reviewed candidate is live at <https://www.elliebfit.com/>. Published metadata revision `1dd986d`;
   [release record](docs/releases/2026-10-24.md) links successful deployment and validation runs.
 - Pages now uses Actions, preserving the custom domain and enforced HTTPS. Main pushes validate;
   only a manual `pages.yml` dispatch with publish=true publishes the allowlisted artifact.
@@ -27,6 +27,8 @@ next_action: None (complete)
   redirects pass. Browser verified homepage, guides and email-only class signup without submitting.
 - Ellen's final bios, experience badge, testimonials, PWR links and three-area service wording are
   live. No review controls or editorial/source files are served; private review remains on Lula.
+- Post-launch [SEO audit](docs/seo-readiness-2026-10-24.md) passed after logo, guide-name and offer-link
+  metadata corrections; Claude and OpenRouter passed independently. Fresh 66-file/16-page checks pass.
 - Requested publication is complete. Discovery-account baselines and directory activation in PLAN.md
   remain future work; no listing edits, outreach or real inquiry/email tests were performed.
 

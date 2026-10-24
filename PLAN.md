@@ -86,6 +86,8 @@ real forms. Account rows require actual console evidence; public crawl checks do
 
 LAN review: <http://10.0.1.5:8080/>. Current evidence: [release record](docs/releases/2026-10-24.md).
 
+- [x] Complete [post-launch search/AI ingestion audit](docs/seo-readiness-2026-10-24.md) and deploy verified metadata refinements.
+
 ## Publication checklist
 Published October 24 after explicit approval. Pages Actions publishes the validated public artifact;
 live hash, 16-page, domain redirect, source-exposure and browser checks passed. Release evidence
