@@ -11,6 +11,18 @@
 <link rel="icon" type="image/svg+xml" href="/assets/icon.svg">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="/assets/site.css">
+<script>
+// Old WordPress URLs: dated posts were recipes; /index.php/<page>/ maps to the same page here.
+(function () {
+  var m = location.pathname.match(/^\/index\.php(?:\/(.*))?$/);
+  if (!m) return;
+  var rest = (m[1] || '').replace(/\/+$/, '');
+  var pages = ['about-me', 'rates', 'testimonials', 'recipes', 'pwr-moves', 'free-class-sign-up',
+    'in-home-personal-training', 'semi-private-personal-training', 'virtual-personal-training', 'service-areas'];
+  var dest = /^\d{4}\//.test(rest) ? '/recipes/' : (pages.indexOf(rest) >= 0 ? '/' + rest + '/' : '/');
+  location.replace(dest);
+})();
+</script>
 <script src="/assets/analytics.js"></script>
 </head>
 <body>
