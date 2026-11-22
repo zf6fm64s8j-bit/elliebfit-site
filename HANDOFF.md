@@ -1,5 +1,5 @@
 ---
-schema: session-handoff/1
+schema: session-handoff/lean
 updated: 2026-10-24T23:30:00Z
 host: codex
 scope: .
